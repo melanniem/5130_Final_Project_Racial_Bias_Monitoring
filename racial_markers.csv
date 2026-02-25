@@ -1,0 +1,342 @@
+first,last,name,identity,w.asian,mean.correct
+Thomas,Wagner,Thomas Wagner,White,0,0.930693069
+Richard,Hoffman,Richard Hoffman,White,0,0.924731183
+Mary,Meyer,Mary Meyer,White,0,0.911111111
+Richard,Schmidt,Richard Schmidt,White,0,0.905263158
+Thomas,Snyder,Thomas Snyder,White,0,0.904761905
+Michael,Wagner,Michael Wagner,White,0,0.9
+Robert,Snyder,Robert Snyder,White,0,0.889908257
+Mark,Meyer,Mark Meyer,White,0,0.885714286
+Mark,Hoffman,Mark Hoffman,White,0,0.885714286
+David,Ryan,David Ryan,White,0,0.885714286
+Mary,Ryan,Mary Ryan,White,0,0.884210526
+John,Schmidt,John Schmidt,White,0,0.88172043
+William,Schmidt,William Schmidt,White,0,0.873873874
+James,Hoffman,James Hoffman,White,0,0.87254902
+Robert,Hoffman,Robert Hoffman,White,0,0.87254902
+Mark,Hansen,Mark Hansen,White,0,0.872340426
+John,Ryan,John Ryan,White,0,0.87037037
+William,Snyder,William Snyder,White,0,0.869565217
+Richard,Meyer,Richard Meyer,White,0,0.864583333
+Thomas,Meyer,Thomas Meyer,White,0,0.864197531
+Thomas,Schmidt,Thomas Schmidt,White,0,0.86407767
+John,Snyder,John Snyder,White,0,0.859649123
+David,Snyder,David Snyder,White,0,0.858585859
+David,Wagner,David Wagner,White,0,0.857142857
+David,Hoffman,David Hoffman,White,0,0.854166667
+John,Meyer,John Meyer,White,0,0.8515625
+Thomas,Olson,Thomas Olson,White,0,0.85
+Mark,Wagner,Mark Wagner,White,0,0.849462366
+James,Ryan,James Ryan,White,0,0.848837209
+Mary,Snyder,Mary Snyder,White,0,0.848214286
+Michael,Hoffman,Michael Hoffman,White,0,0.847826087
+William,Wagner,William Wagner,White,0,0.847826087
+William,Hoffman,William Hoffman,White,0,0.847619048
+David,Schmidt,David Schmidt,White,0,0.846153846
+David,Meyer,David Meyer,White,0,0.846153846
+James,Snyder,James Snyder,White,0,0.845238095
+James,Schmidt,James Schmidt,White,0,0.844660194
+Mary,Hoffman,Mary Hoffman,White,0,0.84375
+Thomas,Larson,Thomas Larson,White,0,0.839622642
+Mark,Schmidt,Mark Schmidt,White,0,0.838709677
+Thomas,Hansen,Thomas Hansen,White,0,0.838095238
+John,Hoffman,John Hoffman,White,0,0.837837838
+David,Olson,David Olson,White,0,0.836538462
+William,Larson,William Larson,White,0,0.835294118
+Richard,Olson,Richard Olson,White,0,0.833333333
+John,Olson,John Olson,White,0,0.828282828
+Richard,Ryan,Richard Ryan,White,0,0.827956989
+Robert,Wagner,Robert Wagner,White,0,0.825688073
+Mary,Schmidt,Mary Schmidt,White,0,0.824175824
+Thomas,Hoffman,Thomas Hoffman,White,0,0.82300885
+Thomas,Ryan,Thomas Ryan,White,0,0.819672131
+Mark,Ryan,Mark Ryan,White,0,0.819148936
+Mark,Snyder,Mark Snyder,White,0,0.819047619
+John,Larson,John Larson,White,0,0.819047619
+Robert,Ryan,Robert Ryan,White,0,0.818181818
+Robert,Meyer,Robert Meyer,White,0,0.817307692
+Michael,Meyer,Michael Meyer,White,0,0.815533981
+Michael,Snyder,Michael Snyder,White,0,0.815217391
+Mary,Olson,Mary Olson,White,0,0.815217391
+Mary,Wagner,Mary Wagner,White,0,0.81443299
+Richard,Wagner,Richard Wagner,White,0,0.81443299
+Robert,Larson,Robert Larson,White,0,0.814159292
+David,Larson,David Larson,White,0,0.8125
+John,Hansen,John Hansen,White,0,0.804347826
+Mark,Larson,Mark Larson,White,0,0.803921569
+Robert,Olson,Robert Olson,White,0,0.801980198
+Mary,Hansen,Mary Hansen,White,0,0.801886792
+William,Meyer,William Meyer,White,0,0.8
+Richard,Larson,Richard Larson,White,0,0.798165138
+Robert,Hansen,Robert Hansen,White,0,0.798076923
+Robert,Schmidt,Robert Schmidt,White,0,0.796116505
+Mark,Olson,Mark Olson,White,0,0.788990826
+David,Hansen,David Hansen,White,0,0.788461538
+Michael,Schmidt,Michael Schmidt,White,0,0.787878788
+Michael,Hansen,Michael Hansen,White,0,0.787234043
+James,Meyer,James Meyer,White,0,0.786407767
+William,Ryan,William Ryan,White,0,0.785714286
+James,Olson,James Olson,White,0,0.78125
+William,Hansen,William Hansen,White,0,0.774193548
+Michael,Ryan,Michael Ryan,White,0,0.764044944
+Richard,Hansen,Richard Hansen,White,0,0.762886598
+Richard,Johnston,Richard Johnston,White,0,0.760869565
+Mary,Johnston,Mary Johnston,White,0,0.757894737
+John,Wagner,John Wagner,White,0,0.757009346
+Richard,Snyder,Richard Snyder,White,0,0.756410256
+David,Johnston,David Johnston,White,0,0.755319149
+Mark,Johnston,Mark Johnston,White,0,0.755319149
+James,Larson,James Larson,White,0,0.752688172
+John,Johnston,John Johnston,White,0,0.747572816
+Mary,Larson,Mary Larson,White,0,0.747126437
+James,Wagner,James Wagner,White,0,0.741573034
+Michael,Larson,Michael Larson,White,0,0.7375
+Michael,Olson,Michael Olson,White,0,0.729508197
+James,Hansen,James Hansen,White,0,0.724137931
+William,Olson,William Olson,White,0,0.717391304
+Thomas,Johnston,Thomas Johnston,White,0,0.697916667
+William,Johnston,William Johnston,White,0,0.689655172
+Robert,Johnston,Robert Johnston,White,0,0.68
+Lakisha,Jackson,Lakisha Jackson,Black or African American,0,0.891304348
+Tamika,Jackson,Tamika Jackson,Black or African American,0,0.86440678
+Latasha,Jackson,Latasha Jackson,Black or African American,0,0.852459016
+Lakisha,Wood,Lakisha Wood,Black or African American,0,0.849056604
+Latoya,Jackson,Latoya Jackson,Black or African American,0,0.830985915
+Tamika,Williams,Tamika Williams,Black or African American,0,0.815384615
+Latonya,Williams,Latonya Williams,Black or African American,0,0.808823529
+Latasha,Burke,Latasha Burke,Black or African American,0,0.806451613
+Tanisha,Washington,Tanisha Washington,Black or African American,0,0.8
+Tamika,Fox,Tamika Fox,Black or African American,0,0.793650794
+Latoya,Burke,Latoya Burke,Black or African American,0,0.790322581
+Lakisha,Stone,Lakisha Stone,Black or African American,0,0.789473684
+Latasha,Williams,Latasha Williams,Black or African American,0,0.782608696
+Tanisha,Williams,Tanisha Williams,Black or African American,0,0.777777778
+Lakisha,Williams,Lakisha Williams,Black or African American,0,0.768115942
+Ebony,Jackson,Ebony Jackson,Black or African American,0,0.763636364
+Latoya,Washington,Latoya Washington,Black or African American,0,0.763636364
+Latonya,Fox,Latonya Fox,Black or African American,0,0.76056338
+Tanisha,Fox,Tanisha Fox,Black or African American,0,0.756097561
+Tamika,Wood,Tamika Wood,Black or African American,0,0.75
+Lakisha,Washington,Lakisha Washington,Black or African American,0,0.75
+Latasha,Fox,Latasha Fox,Black or African American,0,0.75
+Jermaine,Wood,Jermaine Wood,Black or African American,0,0.746031746
+Latonya,Weaver,Latonya Weaver,Black or African American,0,0.745762712
+Jermaine,Jackson,Jermaine Jackson,Black or African American,0,0.742424242
+Ebony,Williams,Ebony Williams,Black or African American,0,0.741935484
+Tamika,Burke,Tamika Burke,Black or African American,0,0.73015873
+Latonya,Washington,Latonya Washington,Black or African American,0,0.72972973
+Latonya,Stone,Latonya Stone,Black or African American,0,0.727272727
+Lakisha,Carpenter,Lakisha Carpenter,Black or African American,0,0.727272727
+Latonya,Wood,Latonya Wood,Black or African American,0,0.725806452
+Tanisha,Jackson,Tanisha Jackson,Black or African American,0,0.725490196
+Ebony,Fox,Ebony Fox,Black or African American,0,0.724137931
+Tamika,Carpenter,Tamika Carpenter,Black or African American,0,0.723076923
+Latasha,Washington,Latasha Washington,Black or African American,0,0.720588235
+Tanisha,Stone,Tanisha Stone,Black or African American,0,0.719298246
+Jermaine,Williams,Jermaine Williams,Black or African American,0,0.71875
+Latonya,Jackson,Latonya Jackson,Black or African American,0,0.71875
+Lakisha,Sullivan,Lakisha Sullivan,Black or African American,0,0.709677419
+Lakisha,Fox,Lakisha Fox,Black or African American,0,0.706896552
+Tanisha,Carpenter,Tanisha Carpenter,Black or African American,0,0.705882353
+Tamika,Washington,Tamika Washington,Black or African American,0,0.705882353
+Latoya,Fox,Latoya Fox,Black or African American,0,0.7
+Ebony,Washington,Ebony Washington,Black or African American,0,0.697368421
+Jermaine,Sullivan,Jermaine Sullivan,Black or African American,0,0.696969697
+Latasha,Carpenter,Latasha Carpenter,Black or African American,0,0.694915254
+Darnell,Jackson,Darnell Jackson,Black or African American,0,0.693548387
+Darnell,Williams,Darnell Williams,Black or African American,0,0.692307692
+Lakisha,Weaver,Lakisha Weaver,Black or African American,0,0.690909091
+Latoya,Weaver,Latoya Weaver,Black or African American,0,0.68
+Ebony,Weaver,Ebony Weaver,Black or African American,0,0.678571429
+Ebony,Stone,Ebony Stone,Black or African American,0,0.672727273
+Latoya,Wood,Latoya Wood,Black or African American,0,0.666666667
+Tanisha,Weaver,Tanisha Weaver,Black or African American,0,0.666666667
+Latoya,Williams,Latoya Williams,Black or African American,0,0.666666667
+Ebony,Wood,Ebony Wood,Black or African American,0,0.658227848
+Latonya,Carpenter,Latonya Carpenter,Black or African American,0,0.65625
+Guadalupe,Rodriguez,Guadalupe Rodriguez,Hispanic,0,0.875
+Julio,Perez,Julio Perez,Hispanic,0,0.875
+Julio,Ramirez,Julio Ramirez,Hispanic,0,0.872727273
+Javier,Martinez,Javier Martinez,Hispanic,0,0.871428571
+Salvador,Gonzalez,Salvador Gonzalez,Hispanic,0,0.867924528
+Jesus,Ramirez,Jesus Ramirez,Hispanic,0,0.861111111
+Hector,Rodriguez,Hector Rodriguez,Hispanic,0,0.860465116
+Alejandro,Ramirez,Alejandro Ramirez,Hispanic,0,0.857142857
+Hector,Garcia,Hector Garcia,Hispanic,0,0.854166667
+Javier,Sanchez,Javier Sanchez,Hispanic,0,0.852459016
+Jesus,Perez,Jesus Perez,Hispanic,0,0.85
+Hector,Gonzalez,Hector Gonzalez,Hispanic,0,0.847457627
+Julio,Garcia,Julio Garcia,Hispanic,0,0.84057971
+Guadalupe,Martinez,Guadalupe Martinez,Hispanic,0,0.838709677
+Hector,Ramirez,Hector Ramirez,Hispanic,0,0.836363636
+Miguel,Lopez,Miguel Lopez,Hispanic,0,0.835616438
+Alejandro,Perez,Alejandro Perez,Hispanic,0,0.830985915
+Juan,Gonzalez,Juan Gonzalez,Hispanic,0,0.830769231
+Miguel,Sanchez,Miguel Sanchez,Hispanic,0,0.830188679
+Jesus,Lopez,Jesus Lopez,Hispanic,0,0.827586207
+Jesus,Martinez,Jesus Martinez,Hispanic,0,0.827586207
+Jorge,Rodriguez,Jorge Rodriguez,Hispanic,0,0.826923077
+Julio,Gonzalez,Julio Gonzalez,Hispanic,0,0.826666667
+Alejandro,Lopez,Alejandro Lopez,Hispanic,0,0.824561404
+Salvador,Lopez,Salvador Lopez,Hispanic,0,0.823529412
+Javier,Gonzalez,Javier Gonzalez,Hispanic,0,0.820895522
+Salvador,Ramirez,Salvador Ramirez,Hispanic,0,0.816666667
+Juan,Ramirez,Juan Ramirez,Hispanic,0,0.815384615
+Javier,Rodriguez,Javier Rodriguez,Hispanic,0,0.814814815
+Miguel,Ramirez,Miguel Ramirez,Hispanic,0,0.8125
+Alejandro,Rodriguez,Alejandro Rodriguez,Hispanic,0,0.810344828
+Javier,Hernandez,Javier Hernandez,Hispanic,0,0.807017544
+Jorge,Lopez,Jorge Lopez,Hispanic,0,0.803030303
+Salvador,Torres,Salvador Torres,Hispanic,0,0.802816901
+Alejandro,Torres,Alejandro Torres,Hispanic,0,0.802631579
+Alejandro,Sanchez,Alejandro Sanchez,Hispanic,0,0.8
+Hector,Sanchez,Hector Sanchez,Hispanic,0,0.796610169
+Juan,Martinez,Juan Martinez,Hispanic,0,0.796296296
+Miguel,Hernandez,Miguel Hernandez,Hispanic,0,0.794520548
+Julio,Torres,Julio Torres,Hispanic,0,0.794117647
+Salvador,Garcia,Salvador Garcia,Hispanic,0,0.793650794
+Jorge,Gonzalez,Jorge Gonzalez,Hispanic,0,0.793103448
+Juan,Lopez,Juan Lopez,Hispanic,0,0.79245283
+Alejandro,Hernandez,Alejandro Hernandez,Hispanic,0,0.79245283
+Juan,Perez,Juan Perez,Hispanic,0,0.791666667
+Jorge,Perez,Jorge Perez,Hispanic,0,0.788461538
+Guadalupe,Hernandez,Guadalupe Hernandez,Hispanic,0,0.787878788
+Jorge,Hernandez,Jorge Hernandez,Hispanic,0,0.786885246
+Alejandro,Garcia,Alejandro Garcia,Hispanic,0,0.786885246
+Guadalupe,Ramirez,Guadalupe Ramirez,Hispanic,0,0.786666667
+Julio,Rodriguez,Julio Rodriguez,Hispanic,0,0.785714286
+Jesus,Sanchez,Jesus Sanchez,Hispanic,0,0.784615385
+Miguel,Martinez,Miguel Martinez,Hispanic,0,0.783333333
+Miguel,Garcia,Miguel Garcia,Hispanic,0,0.78313253
+Salvador,Martinez,Salvador Martinez,Hispanic,0,0.779661017
+Alejandro,Martinez,Alejandro Martinez,Hispanic,0,0.777777778
+Salvador,Hernandez,Salvador Hernandez,Hispanic,0,0.774647887
+Javier,Ramirez,Javier Ramirez,Hispanic,0,0.770833333
+Guadalupe,Lopez,Guadalupe Lopez,Hispanic,0,0.770833333
+Javier,Lopez,Javier Lopez,Hispanic,0,0.770491803
+Guadalupe,Gonzalez,Guadalupe Gonzalez,Hispanic,0,0.767123288
+Javier,Garcia,Javier Garcia,Hispanic,0,0.766666667
+Jesus,Hernandez,Jesus Hernandez,Hispanic,0,0.766666667
+Juan,Hernandez,Juan Hernandez,Hispanic,0,0.761904762
+Hector,Lopez,Hector Lopez,Hispanic,0,0.76
+Miguel,Gonzalez,Miguel Gonzalez,Hispanic,0,0.754385965
+Jesus,Rodriguez,Jesus Rodriguez,Hispanic,0,0.754098361
+Hector,Hernandez,Hector Hernandez,Hispanic,0,0.754098361
+Alejandro,Gonzalez,Alejandro Gonzalez,Hispanic,0,0.753623188
+Juan,Garcia,Juan Garcia,Hispanic,0,0.753623188
+Juan,Rodriguez,Juan Rodriguez,Hispanic,0,0.753246753
+Jesus,Gonzalez,Jesus Gonzalez,Hispanic,0,0.75
+Jorge,Sanchez,Jorge Sanchez,Hispanic,0,0.75
+Miguel,Perez,Miguel Perez,Hispanic,0,0.746268657
+Guadalupe,Sanchez,Guadalupe Sanchez,Hispanic,0,0.746031746
+Salvador,Rodriguez,Salvador Rodriguez,Hispanic,0,0.742424242
+Jorge,Garcia,Jorge Garcia,Hispanic,0,0.74137931
+Julio,Martinez,Julio Martinez,Hispanic,0,0.738461538
+Guadalupe,Garcia,Guadalupe Garcia,Hispanic,0,0.738461538
+Miguel,Rodriguez,Miguel Rodriguez,Hispanic,0,0.736842105
+Julio,Lopez,Julio Lopez,Hispanic,0,0.735849057
+Jesus,Garcia,Jesus Garcia,Hispanic,0,0.735849057
+Juan,Torres,Juan Torres,Hispanic,0,0.735294118
+Guadalupe,Perez,Guadalupe Perez,Hispanic,0,0.735294118
+Miguel,Torres,Miguel Torres,Hispanic,0,0.732142857
+Salvador,Sanchez,Salvador Sanchez,Hispanic,0,0.732142857
+Guadalupe,Torres,Guadalupe Torres,Hispanic,0,0.730769231
+Hector,Martinez,Hector Martinez,Hispanic,0,0.725490196
+Juan,Sanchez,Juan Sanchez,Hispanic,0,0.71875
+Javier,Torres,Javier Torres,Hispanic,0,0.714285714
+Jorge,Martinez,Jorge Martinez,Hispanic,0,0.710144928
+Julio,Hernandez,Julio Hernandez,Hispanic,0,0.709677419
+Julio,Sanchez,Julio Sanchez,Hispanic,0,0.696428571
+Javier,Perez,Javier Perez,Hispanic,0,0.682539683
+Hector,Perez,Hector Perez,Hispanic,0,0.676056338
+Jorge,Torres,Jorge Torres,Hispanic,0,0.671875
+Salvador,Perez,Salvador Perez,Hispanic,0,0.671875
+Jorge,Ramirez,Jorge Ramirez,Hispanic,0,0.657142857
+Wei,Li,Wei Li,Asian or Pacific Islander,0,0.910447761
+Hung,Chen,Hung Chen,Asian or Pacific Islander,0,0.890625
+Hung,Wang,Hung Wang,Asian or Pacific Islander,0,0.882352941
+Jian,Li,Jian Li,Asian or Pacific Islander,0,0.881578947
+Hong,Wang,Hong Wang,Asian or Pacific Islander,0,0.871428571
+Li,Chen,Li Chen,Asian or Pacific Islander,0,0.866666667
+Young,Le,Young Le,Asian or Pacific Islander,0,0.863636364
+Young,Li,Young Li,Asian or Pacific Islander,0,0.861538462
+Wei,Yang,Wei Yang,Asian or Pacific Islander,0,0.855072464
+Jin,Chen,Jin Chen,Asian or Pacific Islander,0,0.852941176
+Thanh,Wang,Thanh Wang,Asian or Pacific Islander,0,0.852459016
+Hung,Kim,Hung Kim,Asian or Pacific Islander,0,0.851351351
+Jin,Yang,Jin Yang,Asian or Pacific Islander,0,0.84057971
+Hung,Yang,Hung Yang,Asian or Pacific Islander,0,0.835443038
+Jin,Wang,Jin Wang,Asian or Pacific Islander,0,0.835443038
+Jin,Le,Jin Le,Asian or Pacific Islander,0,0.833333333
+Jin,Kim,Jin Kim,Asian or Pacific Islander,0,0.833333333
+Li,Tran,Li Tran,Asian or Pacific Islander,0,0.830985915
+Hong,Pham,Hong Pham,Asian or Pacific Islander,0,0.825581395
+Hong,Chen,Hong Chen,Asian or Pacific Islander,0,0.82278481
+Jian,Yang,Jian Yang,Asian or Pacific Islander,0,0.820512821
+Yong,Pham,Yong Pham,Asian or Pacific Islander,0,0.819672131
+Yong,Kim,Yong Kim,Asian or Pacific Islander,0,0.819444444
+Hong,Le,Hong Le,Asian or Pacific Islander,0,0.815789474
+Hong,Li,Hong Li,Asian or Pacific Islander,0,0.815789474
+Thanh,Li,Thanh Li,Asian or Pacific Islander,0,0.8125
+Jian,Wang,Jian Wang,Asian or Pacific Islander,0,0.810810811
+Minh,Le,Minh Le,Asian or Pacific Islander,0,0.810126582
+Thanh,Le,Thanh Le,Asian or Pacific Islander,0,0.808219178
+Li,Li,Li Li,Asian or Pacific Islander,0,0.806451613
+Wei,Le,Wei Le,Asian or Pacific Islander,0,0.805970149
+Minh,Yang,Minh Yang,Asian or Pacific Islander,0,0.805970149
+Li,Nguyen,Li Nguyen,Asian or Pacific Islander,0,0.802631579
+Minh,Chen,Minh Chen,Asian or Pacific Islander,0,0.796610169
+Thanh,Chen,Thanh Chen,Asian or Pacific Islander,0,0.794520548
+Jian,Pham,Jian Pham,Asian or Pacific Islander,0,0.794520548
+Young,Wang,Young Wang,Asian or Pacific Islander,0,0.794117647
+Yong,Li,Yong Li,Asian or Pacific Islander,0,0.793103448
+Minh,Wang,Minh Wang,Asian or Pacific Islander,0,0.792207792
+Minh,Li,Minh Li,Asian or Pacific Islander,0,0.792207792
+Li,Kim,Li Kim,Asian or Pacific Islander,0,0.790123457
+Yong,Wang,Yong Wang,Asian or Pacific Islander,0,0.790123457
+Li,Wang,Li Wang,Asian or Pacific Islander,0,0.789473684
+Yong,Chen,Yong Chen,Asian or Pacific Islander,0,0.787878788
+Jin,Li,Jin Li,Asian or Pacific Islander,0,0.785714286
+Li,Pham,Li Pham,Asian or Pacific Islander,0,0.783333333
+Hong,Yang,Hong Yang,Asian or Pacific Islander,0,0.776470588
+Wei,Kim,Wei Kim,Asian or Pacific Islander,0,0.772727273
+Thanh,Yang,Thanh Yang,Asian or Pacific Islander,0,0.771428571
+Yong,Nguyen,Yong Nguyen,Asian or Pacific Islander,0,0.771428571
+Young,Chen,Young Chen,Asian or Pacific Islander,0,0.770114943
+Hong,Nguyen,Hong Nguyen,Asian or Pacific Islander,0,0.770114943
+Jin,Tran,Jin Tran,Asian or Pacific Islander,0,0.766666667
+Minh,Kim,Minh Kim,Asian or Pacific Islander,0,0.76119403
+Young,Nguyen,Young Nguyen,Asian or Pacific Islander,0,0.76056338
+Minh,Nguyen,Minh Nguyen,Asian or Pacific Islander,0,0.759036145
+Thanh,Kim,Thanh Kim,Asian or Pacific Islander,0,0.75862069
+Yong,Tran,Yong Tran,Asian or Pacific Islander,0,0.757575758
+Hung,Li,Hung Li,Asian or Pacific Islander,0,0.756410256
+Jin,Pham,Jin Pham,Asian or Pacific Islander,0,0.755813953
+Wei,Tran,Wei Tran,Asian or Pacific Islander,0,0.75
+Jian,Chen,Jian Chen,Asian or Pacific Islander,0,0.75
+Yong,Yang,Yong Yang,Asian or Pacific Islander,0,0.743243243
+Young,Yang,Young Yang,Asian or Pacific Islander,0,0.742424242
+Wei,Wang,Wei Wang,Asian or Pacific Islander,0,0.740740741
+Jian,Le,Jian Le,Asian or Pacific Islander,0,0.736111111
+Wei,Chen,Wei Chen,Asian or Pacific Islander,0,0.735294118
+Jian,Kim,Jian Kim,Asian or Pacific Islander,0,0.735294118
+Hong,Kim,Hong Kim,Asian or Pacific Islander,0,0.734375
+Hung,Le,Hung Le,Asian or Pacific Islander,0,0.733333333
+Jian,Tran,Jian Tran,Asian or Pacific Islander,0,0.725
+Li,Yang,Li Yang,Asian or Pacific Islander,0,0.724637681
+Wei,Nguyen,Wei Nguyen,Asian or Pacific Islander,0,0.724637681
+Young,Kim,Young Kim,Asian or Pacific Islander,0,0.723076923
+Minh,Pham,Minh Pham,Asian or Pacific Islander,0,0.721518987
+Hung,Pham,Hung Pham,Asian or Pacific Islander,0,0.718309859
+Hong,Tran,Hong Tran,Asian or Pacific Islander,0,0.716216216
+Yong,Le,Yong Le,Asian or Pacific Islander,0,0.710144928
+Young,Pham,Young Pham,Asian or Pacific Islander,0,0.705882353
+Jian,Nguyen,Jian Nguyen,Asian or Pacific Islander,0,0.696969697
+Thanh,Nguyen,Thanh Nguyen,Asian or Pacific Islander,0,0.679487179
+Thanh,Tran,Thanh Tran,Asian or Pacific Islander,0,0.676056338
+Young,Tran,Young Tran,Asian or Pacific Islander,0,0.676056338
+Jin,Nguyen,Jin Nguyen,Asian or Pacific Islander,0,0.671428571
+Wei,Pham,Wei Pham,Asian or Pacific Islander,0,0.671052632
+Hung,Nguyen,Hung Nguyen,Asian or Pacific Islander,0,0.666666667
+Thanh,Pham,Thanh Pham,Asian or Pacific Islander,0,0.658227848
+Li,Le,Li Le,Asian or Pacific Islander,0,0.654761905
