@@ -1,3 +1,13 @@
+# Project Structure
+**Date:** March 10, 2026  
+
+Five Layers:
+- Input Layer
+- Prompt Standardization Layer
+- Model Interface layer
+- Data Persistence Layer
+- Bias Quantification Layer
+
 # Racial Markers Dataset
 
 **Prepared by:** Yutong Zhang  
