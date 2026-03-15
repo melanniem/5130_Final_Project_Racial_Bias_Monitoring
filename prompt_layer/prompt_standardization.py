@@ -61,7 +61,7 @@ else:
     print("FAILED, review format_resume() in input_layer.py")
 
 # Output
-save_cols = ['resume_id', 'name', 'first', 'last', 'identity',
-             'mean_correct', 'job_title', 'prompt']
+save_cols = ['resume_id', 'name_id', 'name', 'first', 'last', 'identity',
+             'mean_correct', 'job_title_id', 'job_title', 'prompt']
 input_df[save_cols].to_csv(OUTPUT_PATH, index=False)
 print(f"Saved {len(input_df)} records to '{OUTPUT_PATH}'")
