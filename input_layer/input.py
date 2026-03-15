@@ -360,12 +360,16 @@ print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 # Combinations
 input_records = []
+name_id_map      = {name: idx for idx, name in enumerate(names_sampled['name'])}
+job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
 for resume_idx, resume in enumerate(resumes_raw):
     for _, name_row in names_sampled.iterrows():
         for job_title, job_desc in JOB_DESCRIPTIONS.items():
             resume_text = format_resume(resume, name_row['name'])
             input_records.append({
                 "resume_id"      : resume_idx,
+                "name_id": name_id_map[name_row['name']],
+                "job_title_id": job_title_id_map[job_title],
                 "name"           : name_row['name'],
                 "first"          : name_row['first'],
                 "last"           : name_row['last'],
