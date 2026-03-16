@@ -2,7 +2,7 @@ import pandas as pd
 import json
 import random
 
-NAMES_CSV_PATH     = "racial_markers.csv"
+NAMES_CSV_PATH     = "data/racial_markers.csv"
 RESUMES_JSONL      = "master_resumes.jsonl"
 OUTPUT_PATH        = "input_combinations.csv"
 NAMES_PER_GROUP    = 57    # names per racial group (matches smallest group: Black = 57)
