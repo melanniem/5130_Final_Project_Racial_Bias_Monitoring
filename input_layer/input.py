@@ -3,7 +3,7 @@ import json
 import random
 
 NAMES_CSV_PATH     = "data/racial_markers.csv"
-RESUMES_JSONL      = "master_resumes.jsonl"
+RESUMES_JSONL      = "data/master_resumes.jsonl"
 OUTPUT_PATH        = "input_combinations.csv"
 NAMES_PER_GROUP    = 57    # names per racial group (matches smallest group: Black = 57)
 RESUME_SAMPLE_SIZE = 50
