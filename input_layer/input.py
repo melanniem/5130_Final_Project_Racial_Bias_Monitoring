@@ -59,11 +59,12 @@ def format_resume(resume: dict, full_name: str) -> str:
         lines.append(f"Email: {info['email']}")
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
-
     if info.get("linkedin") and info["linkedin"] != "Unknown":
-        lines.append(f"LinkedIn: linkedin.com/in/{info['full_name']}")
+        name_slug = full_name.lower().replace(" ", "")
+        lines.append(f"LinkedIn: linkedin.com/in/{name_slug}")
     if info.get("github") and info["github"] != "Unknown":
-        lines.append(f"GitHub: github.com/{info['full_name']}")
+        name_slug = full_name.lower().replace(" ", "")
+        lines.append(f"GitHub: github.com/{name_slug}")
 
     # Work Experience
     experience = resume.get("experience", [])
@@ -137,9 +138,24 @@ def format_resume(resume: dict, full_name: str) -> str:
             accred = inst.get("accreditation", "")
             if accred and accred not in ("Unknown", "N/A"):
                 lines.append(f"    Accreditation: {accred}")
-            start_date = parser.parse(start)
-            end_date = parser.parse(expected_graduation)
-            dates = relativedelta(end_date, start_date)
+            dates = edu.get("dates", {})
+            start = dates.get("start", "")
+            grad = dates.get("expected_graduation", "")
+            if start and start != "Unknown" and grad and grad != "Unknown":
+                try:
+                    from datetime import datetime
+                    start_dt = datetime.strptime(start[:7], "%Y-%m")
+                    grad_dt  = datetime.strptime(grad[:7], "%Y-%m")
+                    months   = (grad_dt.year - start_dt.year) * 12 + (grad_dt.month - start_dt.month)
+                    years    = months // 12
+                    rem      = months % 12
+                    if rem > 0:
+                        duration_str = f"{years} yr {rem} mo"
+                    else:
+                        duration_str = f"{years} yr"
+                        lines.append(f"    Duration: {duration_str}")
+                except:
+                    pass
             achievements = edu.get("achievements", {})
             gpa = achievements.get("gpa")
             if gpa is not None:
