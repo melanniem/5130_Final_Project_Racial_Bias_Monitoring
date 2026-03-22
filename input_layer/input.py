@@ -58,10 +58,6 @@ def format_resume(resume: dict, full_name: str) -> str:
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
 
-    remote = loc.get("remote_preference", "")
-    if remote and remote != "Unknown":
-        lines.append(f"Remote Preference: {remote}")
-
     if info.get("summary") and info["summary"] != "Unknown":
         lines.append(f"\nSummary: {info['summary']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
