@@ -2,37 +2,47 @@ import pandas as pd
 import json
 import random
 
-NAMES_CSV_PATH     = "data/racial_markers.csv"
-RESUMES_JSONL      = "data/master_resumes.jsonl"
-OUTPUT_PATH        = "input_combinations.csv"
-NAMES_PER_GROUP    = 57    # names per racial group (matches smallest group: Black = 57)
+NAMES_CSV_PATH = "data/racial_markers.csv"
+RESUMES_JSONL = "data/master_resumes.jsonl"
+OUTPUT_PATH = "input_combinations.csv"
+NAMES_PER_GROUP = 57  # names per racial group (matches smallest group: Black = 57)
 RESUME_SAMPLE_SIZE = 50
-RANDOM_SEED        = 42
+RANDOM_SEED = 42
+
 
 # Load Validated Names
-names_df = pd.read_csv(NAMES_CSV_PATH)
-print("Names per group (full dataset):")
-print(names_df['identity'].value_counts())
-print(f"Total: {len(names_df)}")
+def load_names(csv_path: str, name_per_group: int) -> pd.DataFrame:
+    names_df = pd.read_csv(NAMES_CSV_PATH)
+    print("Names per group (full dataset):")
+    print(names_df['identity'].value_counts())
+    print(f"Total: {len(names_df)}")
 
-names_sampled = (
-    names_df
-    .sort_values('mean.correct', ascending=False)
-    .groupby('identity')
-    .head(NAMES_PER_GROUP)
-    .reset_index(drop=True)
-)
-print("\nSampled names per group:")
-print(names_sampled['identity'].value_counts())
 
 # Load Resumes
-with open(RESUMES_JSONL, 'r', encoding='utf-8') as f:
-    all_resumes = [json.loads(line) for line in f if line.strip()]
-print(f"\nTotal resumes loaded: {len(all_resumes)}")
+def load_resumes(path):
+    with open(path, 'r', encoding='utf-8') as f:
+        all_resumes = [json.loads(line) for line in f if line.strip()]
+    print(f"\nTotal resumes loaded: {len(all_resumes)}")
+    return all_resumes
 
-random.seed(RANDOM_SEED)
-resumes_raw = random.sample(all_resumes, RESUME_SAMPLE_SIZE)
-print(f"Sampled: {len(resumes_raw)} resumes")
+
+def sample_names(names_df, NAMES_PER_GROUP):
+    print("\nSampled names per group:")
+    print(names_df['identity'].value_counts())
+    return (
+        names_df.sort_values('mean.correct', ascending=False)
+        .groupby('identity')
+        .head(NAMES_PER_GROUP)
+        .reset_index(drop=True)
+    )
+
+
+def sample_resumes(all_resumes):
+    print(f"Sampled: {len(resumes_raw)} resumes")
+    random.seed(RANDOM_SEED)
+    resumes_raw = random.sample(all_resumes, RESUME_SAMPLE_SIZE)
+    return resumes_raw
+
 
 # Converts JSON resume into clean text
 def format_resume(resume: dict, full_name: str) -> str:
@@ -48,7 +58,7 @@ def format_resume(resume: dict, full_name: str) -> str:
         lines.append(f"Phone: {info['phone']}")
 
     loc = info.get("location", {})
-    city    = loc.get("city", "Unknown")
+    city = loc.get("city", "Unknown")
     country = loc.get("country", "Unknown")
     if city != "Unknown" or country != "Unknown":
         parts = [p for p in [city, country] if p != "Unknown"]
@@ -123,31 +133,31 @@ def format_resume(resume: dict, full_name: str) -> str:
     if education:
         lines.append("\nEDUCATION")
         for edu in education:
-            deg          = edu.get("degree", {})
-            level        = deg.get("level", "")
-            field        = deg.get("field", "")
-            major        = deg.get("major", "")
-            inst         = edu.get("institution", {})
-            inst_name    = inst.get("name", "")
-            inst_loc     = inst.get("location", "")
+            deg = edu.get("degree", {})
+            level = deg.get("level", "")
+            field = deg.get("field", "")
+            major = deg.get("major", "")
+            inst = edu.get("institution", {})
+            inst_name = inst.get("name", "")
+            inst_loc = inst.get("location", "")
             if inst_loc and inst_loc != "Unknown":
                 lines.append(f"    Institution Location: {inst_loc}")
-            accred       = inst.get("accreditation", "")
+            accred = inst.get("accreditation", "")
             if accred and accred not in ("Unknown", "N/A"):
                 lines.append(f"    Accreditation: {accred}")
-            dates        = edu.get("dates", {})
-            start        = dates.get("start", "")
+            dates = edu.get("dates", {})
+            start = dates.get("start", "")
             if start and start != "Unknown":
                 lines.append(f"    Start: {start}")
-            grad         = dates.get("expected_graduation", "")
+            grad = dates.get("expected_graduation", "")
             achievements = edu.get("achievements", {})
-            gpa          = achievements.get("gpa")
+            gpa = achievements.get("gpa")
             if gpa is not None:
                 lines.append(f"    GPA: {gpa}")
-            honors       = achievements.get("honors", "")
+            honors = achievements.get("honors", "")
             if honors and honors not in ("", "Unknown"):
                 lines.append(f"    Honors: {honors}")
-            coursework   = achievements.get("relevant_coursework", [])
+            coursework = achievements.get("relevant_coursework", [])
             if coursework and coursework != ["Unknown"]:
                 lines.append(f"    Relevant Coursework: {', '.join(c for c in coursework if c != 'Unknown')}")
 
@@ -164,7 +174,7 @@ def format_resume(resume: dict, full_name: str) -> str:
         if isinstance(items, list):
             cat_items = []
             for item in items:
-                name  = item.get("name", "")
+                name = item.get("name", "")
                 level = item.get("level", item.get("experience", ""))
                 if name and name != "Unknown":
                     cat_items.append(f"{name} ({level})" if level and level != "Unknown" else name)
@@ -213,11 +223,11 @@ def format_resume(resume: dict, full_name: str) -> str:
     if projects:
         lines.append("\nPROJECTS")
         for proj in projects:
-            name   = proj.get("name", "")
-            desc   = proj.get("description", "")
-            tech   = proj.get("technologies", [])
-            role   = proj.get("role", "")
-            url    = proj.get("url", "")
+            name = proj.get("name", "")
+            desc = proj.get("description", "")
+            tech = proj.get("technologies", [])
+            role = proj.get("role", "")
+            url = proj.get("url", "")
             impact = proj.get("impact", "")
             if name and name != "Unknown":
                 tech_str = f" [{', '.join(t for t in tech if t != 'Unknown')}]" if tech and tech != ["Unknown"] else ""
@@ -239,10 +249,10 @@ def format_resume(resume: dict, full_name: str) -> str:
             if isinstance(ach, str) and ach not in ("", "Unknown"):
                 lines.append(f"  - {ach}")
             elif isinstance(ach, dict):
-                title  = ach.get("title", "")
-                year   = ach.get("year", "")
+                title = ach.get("title", "")
+                year = ach.get("year", "")
                 detail = ach.get("details", "")
-                parts  = [x for x in [title, year, detail] if x and x != "Unknown"]
+                parts = [x for x in [title, year, detail] if x and x != "Unknown"]
                 if parts:
                     lines.append(f"  - {' | '.join(parts)}")
 
@@ -251,10 +261,10 @@ def format_resume(resume: dict, full_name: str) -> str:
     if publications:
         lines.append("\nPUBLICATIONS")
         for pub in publications:
-            title      = pub.get("title", "")
+            title = pub.get("title", "")
             conference = pub.get("conference", "")
-            date       = pub.get("date", "")
-            location   = pub.get("location", "")
+            date = pub.get("date", "")
+            location = pub.get("location", "")
             parts = [x for x in [title, conference, date, location] if x and x != "Unknown"]
             if parts:
                 lines.append(f"  - {' | '.join(parts)}")
@@ -264,12 +274,12 @@ def format_resume(resume: dict, full_name: str) -> str:
     if workshops:
         lines.append("\nWORKSHOPS")
         for w in workshops:
-            name     = w.get("name", "")
-            issuer   = w.get("issuer", "")
-            date     = w.get("date", "")
+            name = w.get("name", "")
+            issuer = w.get("issuer", "")
+            date = w.get("date", "")
             duration = w.get("duration", "")
             location = w.get("location", "")
-            desc     = w.get("description", "")
+            desc = w.get("description", "")
             parts = [x for x in [name, issuer, date, duration, location] if x and x != "Unknown"]
             if parts:
                 lines.append(f"  - {' | '.join(parts)}")
@@ -290,16 +300,16 @@ def format_resume(resume: dict, full_name: str) -> str:
     if internships:
         lines.append("\nINTERNSHIPS")
         for intern in internships:
-            title    = intern.get("title", "")
-            company  = intern.get("company", "")
-            role     = intern.get("role", "")
+            title = intern.get("title", "")
+            company = intern.get("company", "")
+            role = intern.get("role", "")
             if role and role != "Unknown":
                 lines.append(f"    Role: {role}")
-            dates    = intern.get("dates", {})
-            start    = dates.get("start", "")
-            end      = dates.get("end", "")
+            dates = intern.get("dates", {})
+            start = dates.get("start", "")
+            end = dates.get("end", "")
             date_str = f"{start} - {end}" if start and start != "Unknown" else ""
-            header   = " | ".join(x for x in [title, company, date_str] if x and x != "Unknown")
+            header = " | ".join(x for x in [title, company, date_str] if x and x != "Unknown")
             if header:
                 lines.append(f"  {header}")
             desc = intern.get("description", "")
@@ -312,13 +322,14 @@ def format_resume(resume: dict, full_name: str) -> str:
             if impact and impact != "Unknown":
                 lines.append(f"    Impact: {impact}")
             for proj in intern.get("projects", []):
-                pname   = proj.get("name", "")
-                pdesc   = proj.get("description", "")
-                prole   = proj.get("role", "")
-                ptech   = proj.get("technologies", [])
+                pname = proj.get("name", "")
+                pdesc = proj.get("description", "")
+                prole = proj.get("role", "")
+                ptech = proj.get("technologies", [])
                 pimpact = proj.get("impact", "")
                 if pname and pname != "Unknown":
-                    ptech_str = f" [{', '.join(t for t in ptech if t != 'Unknown')}]" if ptech and ptech != ["Unknown"] else ""
+                    ptech_str = f" [{', '.join(t for t in ptech if t != 'Unknown')}]" if ptech and ptech != [
+                        "Unknown"] else ""
                     lines.append(f"    Project: {pname}{ptech_str}")
                     if prole and prole != "Unknown":
                         lines.append(f"      Role: {prole}")
@@ -332,6 +343,7 @@ def format_resume(resume: dict, full_name: str) -> str:
     if certs and certs not in ("", "Unknown", "None"):
         lines.append(f"\nCERTIFICATIONS\n  {certs}")
     return "\n".join(lines)
+
 
 # Job Descriptions
 JOB_DESCRIPTIONS = {
@@ -358,26 +370,27 @@ machine learning frameworks (scikit-learn, TensorFlow), SQL, and data visualizat
 }
 print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
+
 # Combinations
 def build_combinations(resumes, names_df):
     input_records = []
-    name_id_map      = {name: idx for idx, name in enumerate(names_df['name'])}
+    name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
     for resume_idx, resume in enumerate(resumes):
         for _, name_row in names_df.iterrows():
             for job_title, job_desc in JOB_DESCRIPTIONS.items():
                 resume_text = format_resume(resume, name_row['name'])
                 input_records.append({
-                    "resume_id"      : resume_idx,
-                    "name_id"        : name_id_map[name_row['name']],
-                    "job_title_id"   : job_title_id_map[job_title],
-                    "name"           : name_row['name'],
-                    "first"          : name_row['first'],
-                    "last"           : name_row['last'],
-                    "identity"       : name_row['identity'],
-                    "mean_correct"   : name_row['mean.correct'],
-                    "job_title"      : job_title,
-                    "resume_text"    : resume_text,
+                    "resume_id": resume_idx,
+                    "name_id": name_id_map[name_row['name']],
+                    "job_title_id": job_title_id_map[job_title],
+                    "name": name_row['name'],
+                    "first": name_row['first'],
+                    "last": name_row['last'],
+                    "identity": name_row['identity'],
+                    "mean_correct": name_row['mean.correct'],
+                    "job_title": job_title,
+                    "resume_text": resume_text,
                     "job_description": job_desc
                 })
     input_df = pd.DataFrame(input_records)
@@ -389,12 +402,13 @@ def build_combinations(resumes, names_df):
     print(input_df['job_title'].value_counts())
     return input_df
 
+
 # Output
 def run_input_layer():
-    names_df      = load_names()
-    all_resumes   = load_resumes(RESUMES_JSONL)
+    names_df = load_names()
+    all_resumes = load_resumes(RESUMES_JSONL)
     names_sampled = sample_names(names_df, NAMES_PER_GROUP)
-    resumes       = sample_resumes(all_resumes)
+    resumes = sample_resumes(all_resumes)
 
     input_df = build_combinations(resumes, names_sampled)
     input_df.to_csv(OUTPUT_PATH, index=False)
