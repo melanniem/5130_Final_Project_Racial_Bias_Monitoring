@@ -60,17 +60,11 @@ def format_resume(resume: dict, full_name: str) -> str:
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
-<<<<<<< HEAD
         name_slug = full_name.lower().replace(" ", "")
         lines.append(f"LinkedIn: linkedin.com/in/{name_slug}")
     if info.get("github") and info["github"] != "Unknown":
         name_slug = full_name.lower().replace(" ", "")
         lines.append(f"GitHub: github.com/{name_slug}")
-=======
-        lines.append(f"LinkedIn: linkedin.com/in/{info.get('full_name')}")
-    if info.get("github") and info["github"] != "Unknown":
-        lines.append(f"GitHub: github.com/{info.get('full_name')}")
->>>>>>> 5c42a57a89e524f98bda729b3bddce3d9db35a82
 
     # Work Experience
     experience = resume.get("experience", [])
