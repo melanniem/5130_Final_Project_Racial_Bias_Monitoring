@@ -1,6 +1,7 @@
 from pathlib import Path
 from input_layer.input import load_resumes
 from input_layer import input
+import main
 
 def test_full_pipeline():
     base = Path(__file__).resolve().parent.parent
@@ -20,3 +21,9 @@ def test_full_pipeline():
     assert not df.empty
     assert len(df) == 3 * len(names_sampled) * len(input.JOB_DESCRIPTIONS)
 
+def test_data_distribution():
+  df = main.run_pipeline()
+
+  counts = df["identity"].value_counts()
+  assert counts.min() > 0
+  assert counts == 4
