@@ -58,12 +58,6 @@ def format_resume(resume: dict, full_name: str) -> str:
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
 
-    loc = info.get("location", {})
-    city = loc.get("city", "Unknown")
-    country = loc.get("country", "Unknown")
-    if city != "Unknown" or country != "Unknown":
-        parts = [p for p in [city, country] if p != "Unknown"]
-        lines.append(f"Location: {', '.join(parts)}")
     remote = loc.get("remote_preference", "")
     if remote and remote != "Unknown":
         lines.append(f"Remote Preference: {remote}")
