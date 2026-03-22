@@ -58,8 +58,6 @@ def format_resume(resume: dict, full_name: str) -> str:
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
 
-    if info.get("summary") and info["summary"] != "Unknown":
-        lines.append(f"\nSummary: {info['summary']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
         lines.append(f"LinkedIn: {info['linkedin']}")
     if info.get("github") and info["github"] != "Unknown":
