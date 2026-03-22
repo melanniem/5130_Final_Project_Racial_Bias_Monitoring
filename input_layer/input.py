@@ -11,7 +11,7 @@ RANDOM_SEED = 42
 
 
 # Load Validated Names
-def load_names() -> pd.DataFrame:
+def load_names(path=NAMES_CSV_PATH) -> pd.DataFrame:
     names_df = pd.read_csv(NAMES_CSV_PATH)
     print("Names per group (full dataset):")
     print(names_df['identity'].value_counts())
@@ -27,21 +27,21 @@ def load_resumes(path):
     return all_resumes
 
 
-def sample_names(names_df, NAMES_PER_GROUP):
+def sample_names(names_df, names_per_group=NAMES_PER_GROUP):
     print("\nSampled names per group:")
     print(names_df['identity'].value_counts())
     return (
         names_df.sort_values('mean.correct', ascending=False)
         .groupby('identity')
-        .head(NAMES_PER_GROUP)
+        .head(names_per_group)
         .reset_index(drop=True)
     )
 
 
-def sample_resumes(all_resumes):
+def sample_resumes(all_resumes, sample_size=RESUME_SAMPLE_SIZE, seed=RANDOM_SEED):
     print(f"Sampled: {len(all_resumes)} resumes")
-    random.seed(RANDOM_SEED)
-    resumes_raw = random.sample(all_resumes, RESUME_SAMPLE_SIZE)
+    random.seed(seed)
+    resumes_raw = random.sample(all_resumes, sample_size)
     return resumes_raw
 
 
@@ -374,7 +374,7 @@ print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 
 # Combinations
-def build_combinations(resumes, names_df):
+def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
     input_records = []
     name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
@@ -412,7 +412,7 @@ def run_input_layer():
     names_sampled = sample_names(names_df, NAMES_PER_GROUP)
     resumes = sample_resumes(all_resumes)
 
-    input_df = build_combinations(resumes, names_sampled)
+    input_df = build_combinations(resumes, names_sampled, JOB_DESCRIPTIONS)
     input_df.to_csv(OUTPUT_PATH, index=False)
     print(f"\nSaved {len(input_df)} records to '{OUTPUT_PATH}'")
     return input_df

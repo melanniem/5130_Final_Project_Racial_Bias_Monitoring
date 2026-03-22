@@ -15,7 +15,7 @@ def test_full_pipeline():
     resumes_sampled = input.sample_resumes(resumes, 3, seed=42)
 
 
-    df = input.generate_combinations(resumes_sampled, names_sampled, input.JOB_DESCRIPTIONS)
+    df = input.build_combinations(resumes_sampled, names_sampled, input.JOB_DESCRIPTIONS)
 
     assert not df.empty
     assert len(df) == 3 * len(names_sampled) * len(input.JOB_DESCRIPTIONS)
