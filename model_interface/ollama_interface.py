@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class OllamaQwen:
-    def __init__(self, model="qwen3.5:cloud", temperature=0):
+    def __init__(self, model="qwen2.5:7b", temperature=0):
         self.model = model
         self.temperature = temperature
 

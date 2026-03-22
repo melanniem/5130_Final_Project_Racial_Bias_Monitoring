@@ -62,7 +62,7 @@ if __name__ == "__main__":
         output_path="llm_outputs.csv"
     )
 
-    logger.info(f"Scoring {len(prompt_list)} prompts via Gemini...")
+    logger.info(f"Scoring {len(prompt_list)} prompts via LLM...")
     # results = client.score_batch(prompt_list) # For running whole pipeline
     results = client.score_batch(prompt_list[:2]) # Test few prompts
     for r in results:
