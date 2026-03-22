@@ -30,7 +30,7 @@ class BiasQuantification:
     Each method prints results, saves a graph, and returns the data.
     """
 
-    def __init__(self, data_path, input_file="llm_outputs.csv", output_dir="./evaluation_outputs", threshold=75.0):
+    def __init__(self, data_path, input_file, output_dir, threshold=75.0):
         self.output_dir = output_dir
         self.threshold = threshold
         os.makedirs(self.output_dir, exist_ok=True) # Create output directory
@@ -63,13 +63,17 @@ class BiasQuantification:
 
     # 1. Mean Score Differences
 
-    def mean_score_difference(self, scores_a, scores_b):
+    def mean_score_difference(self):
         """
         Raw difference in mean scores between two groups A and B.
         """
         print("=" * 40)
         print("1. MEAN SCORE DIFFERENCES")
         print("=" * 40)
+
+        if len(self.unique_groups) < 2:
+            print("  Not enough groups to compare. Skipping.")
+            return pd.DataFrame()
 
         summary = self.df.groupby("race_group")["score"].agg(["count", "mean", "std", "median"]).round(2)
         print(summary, "\n")
@@ -93,13 +97,17 @@ class BiasQuantification:
     
     # 2. Welch's t-test
  
-    def welch_t_test(self, scores_a, scores_b):
+    def welch_t_test(self):
         """
         Calculates whether the score gap is statistically real.
         """
         print("=" * 40)
         print("2. WELCH'S T-TEST")
         print("=" * 40)
+
+        if len(self.unique_groups) < 2:
+            print("  Not enough groups to compare. Skipping.")
+            return pd.DataFrame()
 
         rows = [] # Save stats for each row
         for g_a, g_b in combinations(self.unique_groups, 2): # For each group combination
@@ -131,7 +139,7 @@ class BiasQuantification:
 
     # 3. Cohen's d
 
-    def cohens_d(self, scores_a, scores_b):
+    def cohens_d(self):
         """
         Calculates effect size to see if gap practically meaningful
         
@@ -140,6 +148,10 @@ class BiasQuantification:
         print("=" * 40)
         print("3. COHEN'S d")
         print("=" * 40)
+
+        if len(self.unique_groups) < 2:
+            print("  Not enough groups to compare. Skipping.")
+            return pd.DataFrame()
  
         rows = []
         for g_a, g_b in combinations(self.unique_groups, 2):
@@ -253,10 +265,13 @@ class BiasQuantification:
             p_g = group_counts[group] / N # Probability of this group
             pmi = np.log2(p_tg / (p_t * p_g)) # PMI formula
             rows.append({"term": term, "group": group, "pmi": round(pmi, 3), "count": count})
+
+        if not rows:
+            print("  Not enough data to compute PMI. Skipping.")
+            return pd.DataFrame()
  
         pmi_df = pd.DataFrame(rows).sort_values("pmi", ascending=False).reset_index(drop=True)
         print(pmi_df.head(20).to_string(index=False))
-        print()
  
         # Graph: Top 10 terms per group
         fig, axes = plt.subplots(2, 2, figsize=(14, 10))
@@ -282,7 +297,11 @@ class BiasQuantification:
         print("=" * 40)
         print("6. EMBEDDING ANALYSIS")
         print("=" * 40)
- 
+
+        if len(self.df) < 3:
+            print("  Not enough data for embedding analysis. Skipping.")
+            return None
+
         # Build TF-IDF embeddings of rationale text and group centroids
         vectorizer = TfidfVectorizer(max_features=500, stop_words="english", min_df=3) # Create TF-IDF vectorizer
         tfidf_matrix = vectorizer.fit_transform(self.df["rationale"].fillna("")) # Run vectorizer on every Rationale
@@ -345,7 +364,7 @@ class BiasQuantification:
         """
         Runs full analysis in order
         """
-        self.mean_score_differences()
+        self.mean_score_difference()
         self.welch_t_test()
         self.cohens_d()
         self.disparity_ratio()

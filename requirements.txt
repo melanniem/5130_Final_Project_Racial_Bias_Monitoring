@@ -7,3 +7,4 @@ scipy
 google-genai
 google-generativeai
 python-dotenv
+ollama

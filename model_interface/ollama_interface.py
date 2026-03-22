@@ -1,44 +1,43 @@
-from google import generativeai as genai
+from ollama import chat
 import json
 import time
 from datetime import datetime
 
-class Gemini:
-    def __init__(self, api_key, model="models/gemini-2.5-flash", temperature=0):
-        genai.configure(api_key=api_key)
+
+class OllamaQwen:
+    def __init__(self, model="qwen2.5:7b", temperature=0):
+        self.model = model
         self.temperature = temperature
-        self.model = genai.GenerativeModel(model)
 
-
-    #Raw API Call
+    # Raw API Call
     def call_model(self, prompt):
-        response = self.model.generate_content(
-            prompt,
-            generation_config={"temperature":self.temperature}
+        response = chat(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            options={"temperature": self.temperature},
         )
-        return response.text.strip()
+        return response.message.content.strip()
 
-
-    #Retry Logic to handle a failed API call
+    # Retry Logic to handle a failed API call
     def score_resume(self, prompt, resume_id=None, race_group=None, name_id=None, job_title_id=None, retries=3):
         for attempt in range(retries):
             try:
                 text = self.call_model(prompt)
-                #gemini return model wrapped in '''json
+                # Strip markdown json fences if present
                 text = text.replace("```json", "").replace("```", "").strip()
                 parsed = json.loads(text)
 
                 return {
-                    "resume_id":resume_id,
-                    "race_group":race_group,
+                    "resume_id": resume_id,
+                    "race_group": race_group,
                     "name_id": name_id,
                     "job_title_id": job_title_id,
-                    "model": self.model.model_name,
-                    "temperature":self.temperature,
+                    "model": self.model,
+                    "temperature": self.temperature,
                     "score": parsed.get("score"),
                     "rationale": parsed.get("rationale"),
                     "raw_response": parsed.get("raw_response"),
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
             except Exception as e:
                 if attempt == retries - 1:
@@ -47,16 +46,14 @@ class Gemini:
                         "race_group": race_group,
                         "name_id": name_id,
                         "job_title_id": job_title_id,
-                        "model": self.model.model_name,
+                        "model": self.model,
                         "temperature": self.temperature,
                         "score": None,
                         "rationale": None,
                         "raw_response": str(e),
-                        "timestamp": datetime.now().isoformat()
+                        "timestamp": datetime.now().isoformat(),
                     }
                 time.sleep(2)
-
-
 
     def score_batch(self, prompt_list):
         results = []
@@ -66,11 +63,9 @@ class Gemini:
                 resume_id=item["resume_id"],
                 race_group=item["race_group"],
                 name_id=item.get("name_id"),
-                job_title_id=item.get("job_title_id")
+                job_title_id=item.get("job_title_id"),
             )
-
             results.append(result)
-            #gemini can rate limit batch runs
             time.sleep(0.5)
 
         return results
