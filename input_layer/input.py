@@ -359,34 +359,44 @@ machine learning frameworks (scikit-learn, TensorFlow), SQL, and data visualizat
 print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 # Combinations
-input_records = []
-name_id_map      = {name: idx for idx, name in enumerate(names_sampled['name'])}
-job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
-for resume_idx, resume in enumerate(resumes_raw):
-    for _, name_row in names_sampled.iterrows():
-        for job_title, job_desc in JOB_DESCRIPTIONS.items():
-            resume_text = format_resume(resume, name_row['name'])
-            input_records.append({
-                "resume_id"      : resume_idx,
-                "name_id": name_id_map[name_row['name']],
-                "job_title_id": job_title_id_map[job_title],
-                "name"           : name_row['name'],
-                "first"          : name_row['first'],
-                "last"           : name_row['last'],
-                "identity"       : name_row['identity'],
-                "mean_correct"   : name_row['mean.correct'],
-                "job_title"      : job_title,
-                "resume_text"    : resume_text,
-                "job_description": job_desc
-            })
-input_df = pd.DataFrame(input_records)
-print(f"\nTotal combinations: {len(input_df)}")
-print(f"  = {RESUME_SAMPLE_SIZE} resumes x {NAMES_PER_GROUP * 4} names x {len(JOB_DESCRIPTIONS)} jobs")
-print("\nBy identity:")
-print(input_df['identity'].value_counts())
-print("\nBy job:")
-print(input_df['job_title'].value_counts())
+def build_combinations(resumes, names_df):
+    input_records = []
+    name_id_map      = {name: idx for idx, name in enumerate(names_df['name'])}
+    job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
+    for resume_idx, resume in enumerate(resumes):
+        for _, name_row in names_df.iterrows():
+            for job_title, job_desc in JOB_DESCRIPTIONS.items():
+                resume_text = format_resume(resume, name_row['name'])
+                input_records.append({
+                    "resume_id"      : resume_idx,
+                    "name_id"        : name_id_map[name_row['name']],
+                    "job_title_id"   : job_title_id_map[job_title],
+                    "name"           : name_row['name'],
+                    "first"          : name_row['first'],
+                    "last"           : name_row['last'],
+                    "identity"       : name_row['identity'],
+                    "mean_correct"   : name_row['mean.correct'],
+                    "job_title"      : job_title,
+                    "resume_text"    : resume_text,
+                    "job_description": job_desc
+                })
+    input_df = pd.DataFrame(input_records)
+    print(f"\nTotal combinations: {len(input_df)}")
+    print(f"  = {RESUME_SAMPLE_SIZE} resumes x {NAMES_PER_GROUP * 4} names x {len(JOB_DESCRIPTIONS)} jobs")
+    print("\nBy identity:")
+    print(input_df['identity'].value_counts())
+    print("\nBy job:")
+    print(input_df['job_title'].value_counts())
+    return input_df
 
 # Output
-input_df.to_csv(OUTPUT_PATH, index=False)
-print(f"\nSaved {len(input_df)} records to '{OUTPUT_PATH}'")
+def run_input_layer():
+    names_df      = load_names()
+    all_resumes   = load_resumes(RESUMES_JSONL)
+    names_sampled = sample_names(names_df, NAMES_PER_GROUP)
+    resumes       = sample_resumes(all_resumes)
+
+    input_df = build_combinations(resumes, names_sampled)
+    input_df.to_csv(OUTPUT_PATH, index=False)
+    print(f"\nSaved {len(input_df)} records to '{OUTPUT_PATH}'")
+    return input_df
