@@ -56,7 +56,8 @@ def format_resume(resume: dict, full_name: str) -> str:
 
     info = resume.get("personal_info", {})
     if info.get("email") and info["email"] != "Unknown":
-        lines.append(f"Email: {info['email']}")
+        name_slug = full_name.lower().replace(" ", ".")
+        lines.append(f"Email: {name_slug}@email.com")
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
@@ -145,10 +146,10 @@ def format_resume(resume: dict, full_name: str) -> str:
                 try:
                     from datetime import datetime
                     start_dt = datetime.strptime(start[:7], "%Y-%m")
-                    grad_dt  = datetime.strptime(grad[:7], "%Y-%m")
-                    months   = (grad_dt.year - start_dt.year) * 12 + (grad_dt.month - start_dt.month)
-                    years    = months // 12
-                    rem      = months % 12
+                    grad_dt = datetime.strptime(grad[:7], "%Y-%m")
+                    months = (grad_dt.year - start_dt.year) * 12 + (grad_dt.month - start_dt.month)
+                    years = months // 12
+                    rem = months % 12
                     if rem > 0:
                         duration_str = f"{years} yr {rem} mo"
                     else:
