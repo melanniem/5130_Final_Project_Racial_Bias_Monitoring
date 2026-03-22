@@ -2,6 +2,7 @@ from input_layer import input as input_layer
 from data_persistence import data_persistence
 from model_interface import gemini_interface
 from prompt_layer import prompt_standardization
+from bias_analysis import bias_quantification
 import logging
 import pandas as pd
 from pathlib import Path
@@ -26,11 +27,13 @@ logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
     # Load resume data
+    # == Input Layer ==
     resume_df = input_layer.run_input_layer()
     print(resume_df.head())
     logger.info(f"Generated {len(resume_df)} resume dataframe")
 
     # Load prompt data
+    # == Prompt Standardization Layer ==
     prompt_df = prompt_standardization.run_prompt_layer()
     print(prompt_df.head())
     logger.info(f"Generated {len(prompt_df)} prompts dataframe")
@@ -41,7 +44,7 @@ if __name__ == "__main__":
     # Initialize LLM
     client = gemini_interface.Gemini(api_key=os.environ['GEMINI_API_KEY'])
 
-    # Data Logging and Resume Scoring
+    # == Data Logging and Resume Scoring ==
     prompt_list = prompt_df.apply(lambda row: {
         "prompt": row["prompt"],
         "resume_id": row["resume_id"],
@@ -67,3 +70,15 @@ if __name__ == "__main__":
     # Save results
     persistence.append_batch(results)
     logger.info(f"Saved results via DataPersistence to {persistence.output_path}")
+
+    # == Bias Quantification Layer ==
+
+    quantifier = bias_quantification.BiasQuantification(
+    data_path="./data",
+    input_file="llm_outputs.csv",
+    output_dir="./evaluation_outputs",
+    threshold=75.0,
+    )
+ 
+    quantifier.run_bias_quantification_layer()
+

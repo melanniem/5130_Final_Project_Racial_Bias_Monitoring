@@ -276,7 +276,9 @@ class BiasQuantification:
     # 6. Embedding Analysis
     
     def embedding_analysis(self, top_k=5):
-        """TF-IDF embeddings -> group centroids -> direction vectors + PCA + Cosine similarity."""
+        """
+        TF-IDF embeddings -> group centroids -> direction vectors + PCA + Cosine similarity
+        """
         print("=" * 40)
         print("6. EMBEDDING ANALYSIS")
         print("=" * 40)
@@ -339,9 +341,9 @@ class BiasQuantification:
     
     # RUN ALL
 
-    def run_all(self):
+    def run_bias_quantification_layer(self):
         """
-        Runs full analysis in order.
+        Runs full analysis in order
         """
         self.mean_score_differences()
         self.welch_t_test()
