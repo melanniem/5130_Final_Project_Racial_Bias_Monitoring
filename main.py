@@ -72,7 +72,7 @@ if __name__ == "__main__":
 
         logger.info(f"Scoring {len(prompt_list)} prompts via LLM...")
         # results = client.score_batch(prompt_list) # For running whole pipeline
-        results = client.score_batch(prompt_list[:2]) # Test few prompts
+        results = client.score_batch(prompt_list[:30]) # Test few prompts
 
         logger.info(f"Scoring complete. {sum(1 for r in results if r['score'] is not None)} succeeded, "
                     f"{sum(1 for r in results if r['score'] is None)} failed.")
