@@ -1,5 +1,3 @@
 .env
 .vscode
-.gitignore
 input_combinations.csv
-prompts_output.csv
