@@ -6,3 +6,5 @@ prompts_output.csv
 __pycache__/
 logs/
 *.pyc
+.results
+

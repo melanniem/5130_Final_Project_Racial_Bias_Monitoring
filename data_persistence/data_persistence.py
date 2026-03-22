@@ -38,7 +38,7 @@ class DataPersistence:
             ])
             logger.info("No input file found, creating new file llm_outputs")
 
-    def append_result(self, result: dict, save_every: int = 15):
+    def append_result(self, result: dict, save_every: int = 20):
         """
         Appends result to llm_outputs dataframe
         :param result:
