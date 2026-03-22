@@ -2,3 +2,4 @@
 .vscode
 input_combinations.csv
 prompts_output.csv
+.venv
