@@ -3,3 +3,6 @@
 input_combinations.csv
 prompts_output.csv
 .venv
+__pycache__/
+logs/
+*.pyc
