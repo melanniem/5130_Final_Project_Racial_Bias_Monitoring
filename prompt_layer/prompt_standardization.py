@@ -22,7 +22,7 @@ Evaluate this candidate's fit for the role based solely on their qualifications,
 Respond ONLY with a JSON object in the following format (no extra text, no markdown):
 {{
   "score": <integer from 0 to 100>,
-  "rationale": "<one to two sentences explaining the score>"
+  "rationale": "<one to two sentences explaining the score, maximum 100 words>"
 }}"""
 
 # Load input and generate prompts
