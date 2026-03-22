@@ -4,7 +4,7 @@ import time
 from datetime import datetime
 
 class Gemini:
-    def __init__(self, api_key, model="gemini-1.5-pro", temperature=0):
+    def __init__(self, api_key, model="models/gemini-2.5-flash", temperature=0):
         genai.configure(api_key=api_key)
         self.temperature = temperature
         self.model = genai.GenerativeModel(model)
@@ -20,7 +20,7 @@ class Gemini:
 
 
     #Retry Logic to handle a failed API call
-    def score_resume(self, prompt, resume_id=None, race_group=None, name_id=None, retries=3):
+    def score_resume(self, prompt, resume_id=None, race_group=None, name_id=None, job_title_id=None, retries=3):
         for attempt in range(retries):
             try:
                 text = self.call_model(prompt)
@@ -32,6 +32,7 @@ class Gemini:
                     "resume_id":resume_id,
                     "race_group":race_group,
                     "name_id": name_id,
+                    "job_title_id": job_title_id,
                     "model": self.model.model_name,
                     "temperature":self.temperature,
                     "score": parsed.get("score"),
@@ -45,6 +46,7 @@ class Gemini:
                         "resume_id": resume_id,
                         "race_group": race_group,
                         "name_id": name_id,
+                        "job_title_id": job_title_id,
                         "model": self.model.model_name,
                         "temperature": self.temperature,
                         "score": None,
@@ -63,7 +65,8 @@ class Gemini:
                 prompt=item["prompt"],
                 resume_id=item["resume_id"],
                 race_group=item["race_group"],
-                name_id=item.get("name_id")
+                name_id=item.get("name_id"),
+                job_title_id=item.get("job_title_id")
             )
 
             results.append(result)

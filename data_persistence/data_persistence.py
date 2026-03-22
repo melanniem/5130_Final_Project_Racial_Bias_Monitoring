@@ -31,7 +31,12 @@ class DataPersistence:
             for col in ["model", "temperature", "score", "rationale", "raw_response", "timestamp"]:
                 if col not in self.df.columns:
                     self.df[col] = None
-            logger.info(f"Created new file llm_outputs from {self.input_path} ({len(self.df)} rows)")
+            # Cast to correct types
+            self.df["score"] = pd.to_numeric(self.df["score"], errors="coerce")
+            self.df["temperature"] = pd.to_numeric(self.df["temperature"], errors="coerce")
+            self.df["model"] = self.df["model"].astype(object)
+            self.df["rationale"] = self.df["rationale"].astype(object)
+            self.df["raw_response"] = self.df["raw_response"].astype(object)
         else:
             self.df = pd.DataFrame(columns=[
                 "resume_id", "name_id", "job_title_id", "race_group", "model", "temperature", "score", "rationale", "raw_response", "timestamp"
