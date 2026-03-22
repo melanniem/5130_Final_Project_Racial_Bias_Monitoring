@@ -61,6 +61,7 @@ class Gemini:
                 prompt=item["prompt"],
                 resume_id=item["resume_id"],
                 race_group=item["race_group"],
+                name_id=item.get("name_id")
             )
 
             results.append(result)
