@@ -115,6 +115,7 @@ def format_resume(resume: dict, full_name: str) -> str:
             tech = tech_env.get("technologies", [])
             if tech and tech != ["Unknown"]:
                 lines.append(f"Technologies: {', '.join(t for t in tech if t != 'Unknown')}")
+
             methodologies = tech_env.get("methodologies", [])
             if methodologies and methodologies != ["Unknown"]:
                 lines.append(f"Methodologies: {', '.join(m for m in methodologies if m != 'Unknown')}")
