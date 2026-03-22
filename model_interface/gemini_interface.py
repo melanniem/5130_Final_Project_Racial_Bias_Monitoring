@@ -20,7 +20,7 @@ class Gemini:
 
 
     #Retry Logic to handle a failed API call
-    def score_resume(self, prompt, resume_id=None, race_group=None, retries=3):
+    def score_resume(self, prompt, resume_id=None, race_group=None, name_id=None, retries=3):
         for attempt in range(retries):
             try:
                 text = self.call_model(prompt)
@@ -31,6 +31,7 @@ class Gemini:
                 return {
                     "resume_id":resume_id,
                     "race_group":race_group,
+                    "name_id": name_id,
                     "model": self.model.model_name,
                     "temperature":self.temperature,
                     "score": parsed.get("score"),
@@ -43,6 +44,7 @@ class Gemini:
                     return {
                         "resume_id": resume_id,
                         "race_group": race_group,
+                        "name_id": name_id,
                         "model": self.model.model_name,
                         "temperature": self.temperature,
                         "score": None,
