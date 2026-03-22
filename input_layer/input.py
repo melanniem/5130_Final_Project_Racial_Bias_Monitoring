@@ -137,8 +137,8 @@ def format_resume(resume: dict, full_name: str) -> str:
             accred = inst.get("accreditation", "")
             if accred and accred not in ("Unknown", "N/A"):
                 lines.append(f"    Accreditation: {accred}")
-            start_date = parser.parse(start)
-            end_date = parser.parse(expected_graduation)
+            start_date = dates.get(start)
+            end_date = dates.get(expected_graduation)
             dates = relativedelta(end_date, start_date)
             achievements = edu.get("achievements", {})
             gpa = achievements.get("gpa")
