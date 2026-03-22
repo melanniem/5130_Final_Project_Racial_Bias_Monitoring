@@ -86,7 +86,8 @@
 
 from input_layer import input as input_layer
 from data_persistence import data_persistence
-from model_interface import gemini_interface
+#from model_interface import gemini_interface
+from model_interface import ollama_interface_interface
 from prompt_layer import prompt_standardization
 import logging
 import pandas as pd
@@ -128,8 +129,11 @@ if __name__ == "__main__":
     # Run model interface
     load_dotenv() # Load data variables
 
-    # Initialize LLM
-    client = gemini_interface.Gemini(api_key=os.environ['GEMINI_API_KEY'])
+    # Initialize Gemini
+    # client = gemini_interface.Gemini(api_key=os.environ['GEMINI_API_KEY'])
+
+    # Initialize Ollama LLM
+    client = ollama_interface.OllamaQwen()
 
     # Data Logging and Resume Scoring
     prompt_list = prompt_df.apply(lambda row: {
