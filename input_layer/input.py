@@ -11,11 +11,12 @@ RANDOM_SEED = 42
 
 
 # Load Validated Names
-def load_names(csv_path: str, name_per_group: int) -> pd.DataFrame:
+def load_names() -> pd.DataFrame:
     names_df = pd.read_csv(NAMES_CSV_PATH)
     print("Names per group (full dataset):")
     print(names_df['identity'].value_counts())
     print(f"Total: {len(names_df)}")
+    return names_df
 
 
 # Load Resumes
@@ -38,7 +39,7 @@ def sample_names(names_df, NAMES_PER_GROUP):
 
 
 def sample_resumes(all_resumes):
-    print(f"Sampled: {len(resumes_raw)} resumes")
+    print(f"Sampled: {len(all_resumes)} resumes")
     random.seed(RANDOM_SEED)
     resumes_raw = random.sample(all_resumes, RESUME_SAMPLE_SIZE)
     return resumes_raw

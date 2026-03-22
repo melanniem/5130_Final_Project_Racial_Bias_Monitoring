@@ -6,13 +6,14 @@ import os
 from datetime import datetime
 from pathlib import Path
 
-# Logging Setup
+Path("./logs").mkdir(exist_ok=True)
+
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
     handlers=[
         logging.FileHandler("./logs/running.log", encoding="utf-8"),
-        logging.StreamHandler(sys.stdout) # Prints to console
+        logging.StreamHandler(sys.stdout)
     ]
 )
 logger = logging.getLogger(__name__)
