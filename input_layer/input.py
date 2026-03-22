@@ -1,6 +1,8 @@
 import pandas as pd
 import json
 import random
+from dateutil import parser
+from dateutil.relativedelta import relativedelta
 
 NAMES_CSV_PATH = "data/racial_markers.csv"
 RESUMES_JSONL = "data/master_resumes.jsonl"
@@ -71,9 +73,9 @@ def format_resume(resume: dict, full_name: str) -> str:
     if info.get("summary") and info["summary"] != "Unknown":
         lines.append(f"\nSummary: {info['summary']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
-        lines.append(f"LinkedIn: {info['linkedin']}")
+        lines.append(f"LinkedIn: linkedin.com/in/{info['full_name']}")
     if info.get("github") and info["github"] != "Unknown":
-        lines.append(f"GitHub: {info['github']}")
+        lines.append(f"GitHub: github.com/{info['full_name']}")
 
     # Work Experience
     experience = resume.get("experience", [])
@@ -147,11 +149,9 @@ def format_resume(resume: dict, full_name: str) -> str:
             accred = inst.get("accreditation", "")
             if accred and accred not in ("Unknown", "N/A"):
                 lines.append(f"    Accreditation: {accred}")
-            dates = edu.get("dates", {})
-            start = dates.get("start", "")
-            if start and start != "Unknown":
-                lines.append(f"    Start: {start}")
-            grad = dates.get("expected_graduation", "")
+            start_date = parser.parse(start)
+            end_date = parser.parse(expected_graduation)
+            dates = relativedelta(end_date, start_date)
             achievements = edu.get("achievements", {})
             gpa = achievements.get("gpa")
             if gpa is not None:
