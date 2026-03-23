@@ -10,6 +10,7 @@ from pathlib import Path
 #from dotenv import load_dotenv
 import os
 import json
+import random
 
 INPUT_PATH = "input_combinations.csv"
 LOG_DIR = Path("logs")
@@ -72,7 +73,18 @@ if __name__ == "__main__":
 
         logger.info(f"Scoring {len(prompt_list)} prompts via LLM...")
         # results = client.score_batch(prompt_list) # For running whole pipeline
-        results = client.score_batch(prompt_list[:2]) # Test few prompts
+        #results = client.score_batch(prompt_list[:30]) # Test few prompts
+        #job_prompts = [p for p in prompt_list if p["job_title_id"] == 0]
+        #results = client.score_batch(random.sample(job_prompts, 50))  # Test random prompts
+
+        per_group = 10
+        job_id = 1
+        sampled = []
+        for race in ["White", "Black or African American", "Hispanic", "Asian or Pacific Islander"]:
+            race_prompts = [p for p in prompt_list if p["race_group"] == race and str(p["job_title_id"]) == str(job_id)]
+            sampled.extend(random.sample(race_prompts, per_group))
+        random.shuffle(sampled)
+        results = client.score_batch(sampled)
 
         logger.info(f"Scoring complete. {sum(1 for r in results if r['score'] is not None)} succeeded, "
                     f"{sum(1 for r in results if r['score'] is None)} failed.")

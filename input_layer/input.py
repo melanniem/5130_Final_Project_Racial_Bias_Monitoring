@@ -1,8 +1,77 @@
 import pandas as pd
 import json
 import random
+from datetime import datetime
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
+
+
+def fix_dates(resume: dict) -> dict:
+    """
+    Adjust experience and education dates so they don't overlap
+    and education ends before the first job starts
+    """
+    import copy
+    resume = copy.deepcopy(resume)
+
+    experience = resume.get("experience", [])
+    education = resume.get("education", [])
+
+    def parse_date(s):
+        if not s or s in ("Unknown", "N/A", "Present"):
+            return None
+        for fmt in ("%Y-%m-%d", "%Y-%m", "%Y"):
+            try:
+                return datetime.strptime(s[:10], fmt)
+            except ValueError:
+                continue
+        return None
+
+    def fmt_date(dt):
+        return dt.strftime("%Y-%m-%d")
+
+    # Sort experience by start date (earliest first)
+    for exp in experience:
+        exp["_start"] = parse_date(exp.get("dates", {}).get("start", ""))
+    experience = [e for e in experience if e["_start"] is not None]
+    experience.sort(key=lambda e: e["_start"])
+
+    # Make experience dates sequential (no overlaps)
+    for i in range(1, len(experience)):
+        prev_end = parse_date(experience[i - 1].get("dates", {}).get("end", ""))
+        curr_start = experience[i]["_start"]
+        if prev_end and curr_start and curr_start < prev_end:
+            # Shift current start to after previous end
+            new_start = prev_end + relativedelta(months=1)
+            experience[i]["dates"]["start"] = fmt_date(new_start)
+            experience[i]["_start"] = new_start
+            # Also push end forward by the same delta if needed
+            curr_end = parse_date(experience[i].get("dates", {}).get("end", ""))
+            if curr_end and curr_end <= new_start:
+                experience[i]["dates"]["end"] = fmt_date(new_start + relativedelta(years=1))
+
+    # Find earliest job start
+    job_starts = [e["_start"] for e in experience if e["_start"]]
+    earliest_job = min(job_starts) if job_starts else None
+
+    # Fix education: graduation should be before earliest job start
+    for edu in education:
+        grad = parse_date(edu.get("dates", {}).get("expected_graduation", ""))
+        start = parse_date(edu.get("dates", {}).get("start", ""))
+        if earliest_job and grad and grad > earliest_job:
+            # Move graduation to 1 month before first job
+            new_grad = earliest_job - relativedelta(months=1)
+            edu["dates"]["expected_graduation"] = fmt_date(new_grad)
+            # Adjust start too if needed (assume 4 years for bachelors, 2 for masters)
+            if start and start > new_grad:
+                edu["dates"]["start"] = fmt_date(new_grad - relativedelta(years=4))
+
+    # Clean up temp keys
+    for exp in experience:
+        exp.pop("_start", None)
+    resume["experience"] = experience
+
+    return resume
 
 NAMES_CSV_PATH = "data/racial_markers.csv"
 RESUMES_JSONL = "data/master_resumes.jsonl"
@@ -47,8 +116,9 @@ def sample_resumes(all_resumes, sample_size=RESUME_SAMPLE_SIZE, seed=RANDOM_SEED
     return resumes_raw
 
 
-# Converts JSON resume into clean text
+# Convert JSON resume into clean text
 def format_resume(resume: dict, full_name: str) -> str:
+    resume = fix_dates(resume)
     lines = []
 
     # Personal Info
@@ -380,6 +450,17 @@ print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 # Combinations
 def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
+    # Interleave names so identity groups alternate
+    groups = sorted(names_df['identity'].unique())
+    min_size = names_df.groupby('identity').size().min()
+    buckets = {g: df.reset_index(drop=True) for g, df in names_df.groupby('identity')}
+    interleaved = []
+    for i in range(min_size):
+        for g in groups:
+            interleaved.append(buckets[g].iloc[i])
+    names_df = pd.DataFrame(interleaved).reset_index(drop=True)
+    print(f"\nInterleaved {len(names_df)} names, {min_size} per group across {groups}")
+
     input_records = []
     name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
