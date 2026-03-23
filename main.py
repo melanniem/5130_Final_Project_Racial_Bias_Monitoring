@@ -37,7 +37,9 @@ if __name__ == "__main__":
 
     if run_llm:
         # Input Layer
-        resume_df = input_layer.run_input_layer()
+        # resume_df = input_layer.run_input_layer()
+        # Test Layer 60 resumes
+        resume_df = input_layer.run_test_input_layer()
         print(resume_df.head())
         logger.info(f"Generated {len(resume_df)} resume dataframe")
 
