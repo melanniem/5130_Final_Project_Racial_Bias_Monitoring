@@ -535,7 +535,16 @@ def build_test_combinations(resumes, names_df, job_descriptions,
     for resume_idx, resume in zip(resume_ids, test_resumes):
         for _, name_row in names_interleaved.iterrows():
             for job_title, job_desc in job_descriptions.items():
-                resume_text = format_resume(resume, name_row['name'])
+                try:
+                    resume_text = format_resume(resume, name_row['name'])
+                    if not resume_text:
+                        print(f"FAILED: resume_id={resume_idx}, job={job_title}, review format_resume() in input_layer.py")
+                        resume_text = ""
+                except Exception as e:
+                    if resume_idx == 0:
+                        import traceback
+                        traceback.print_exc()
+                    resume_text = ""
                 test_records.append({
                     "resume_id": resume_idx,
                     "name_id": name_id_map.get(name_row['name'], -1),
