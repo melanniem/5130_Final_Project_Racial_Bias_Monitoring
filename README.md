@@ -1,12 +1,207 @@
-# Project Structure
-**Date:** March 10, 2026  
+# Final Project
 
-Five Layers:
+## Overview
+This project investigates whether Large Language Models (LLMs) exhibit racial bias in automated resume screening by replacing the candidate's name as racail proxies across otherwise identical resumes, and analyzing score disparities across racial groups.
+
+The pipeline is designed as a **five-layer modular system**:
 - Input Layer
 - Prompt Standardization Layer
 - Model Interface layer
 - Data Persistence Layer
 - Bias Quantification Layer
+
+---
+
+## Scalability Estimate
+The baseline experimental design generates:
+1 resume × 50 names × 5 groups (4 racial + 1 null baseline) × 3 jobs = 750 prompts
+
+---
+
+## Technical Stack
+
+| Component | Technology |
+|---|---|
+| Language | Python 3.10+ |
+| Data manipulation | pandas |
+| LLM API | Ollama (`qwen2.5:7b`) & Ollama (...) |
+| Resume dataset | HuggingFace (`datasetmaster/resumes`, 4,817 resumes) |
+| Name dataset | Crabtree et al. (2023) validated racial name dataset |
+| Statistical analysis | scipy, numpy |
+| Embeddings | sentence-transformers |
+| Output format | CSV |
+
+---
+
+## Layer Documentation
+
+### Layer 1 — Input Layer
+
+**Purpose:** Loads resume and name data, injects racial-marker names into resume, and generates resume x names x jobs combinations for evaluation.
+
+**Tech Stack:**
+| Component | Technology |
+|---|---|
+| Data processing | `pandas` |
+| Resume parsing | `json` |
+| Date handling | `python-dateutil`, `datetime` |
+| Sampling | `random` |
+
+**Input:**
+- `data/racial_markers.csv` — columns: `name`, `first`, `last`, `identity`, `mean.correct`
+- `data/master_resumes.jsonl` — one JSON resume object per line
+
+**Output:** 
+| Column | Description |
+|---|---|
+| `resume_id` | Index of the sampled resume |
+| `name_id` | Unique ID for each name (used for downstream mapping) |
+| `job_title_id` | Unique ID for each job title |
+| `name` | Full injected candidate name |
+| `first` | First name |
+| `last` | Last name |
+| `identity` | Racial group label |
+| `mean_correct` | Name recognition rate from validation study |
+| `job_title` | Job title being evaluated |
+| `resume_text` | Formatted resume text with injected name |
+| `job_description` | Full job description text |
+
+**Error Handling:**
+Missing or malformed fields are silently skipped, and date parsing failures are handled gracefully to ensure the pipeline continues processing remaining records.
+
+---
+
+### Layer 2 — Prompt Standardization
+
+**Purpose:** Converts resume x names x jobs combination into a standardized evaluation prompt, and verifies that prompts for the same resume-job pair differ only by candidate name.
+
+**Prompt format:**
+
+Each prompt instructs the LLM to act as an expert HR recruiter and evaluate the resume for a specific job. The LLM is told to respond only with a JSON object:
+
+```json
+{
+  "score": <integer 0–100>,
+  "rationale": "<one to two sentences, max 100 words>"
+}
+```
+
+**Tech Stack:**
+| Component | Technology |
+|---|---|
+| Data processing | `pandas` |
+| Sampling | `random` |
+
+**Input:** csv (output of Layer 1)
+
+**Output:** `prompts_output.csv` with columns:
+
+| Column | Description |
+|---|---|
+| `resume_id` | Resume index (for downstream mapping) |
+| `name_id` | Name index (for downstream mapping) |
+| `name` | Full name |
+| `first` | First name |
+| `last` | Last name |
+| `identity` | Racial group label |
+| `mean_correct` | Name recognition rate |
+| `job_title_id` | Job title index |
+| `job_title` | Job title string |
+| `prompt` | Full formatted prompt string ready for LLM input |
+
+**Error Handling:**
+Consistency check failures are flagged with the specific resume_id and job_title for review, without stopping the pipeline.
+
+---
+
+### Layer 3 — Model Interface
+
+**Purpose:**
+Sends each standardized prompt to the local Ollama model and returns a structured response containing a numeric score and rationale.
+
+**Tech Stack:**
+| Component | Technology |
+|---|---|
+| Local LLM | Ollama (`qwen2.5:7b`) |
+| Response parsing | `json` |
+| Retry delay | `time`, `datetime` |
+
+**Input:** Prompt strings from `prompts_output.csv`
+
+**Output:** Score (0–100), rationale text, and metadata per prompt
+
+**Error Handling:**
+API call failures are retried automatically, unresolvable errors return a null score and are logged without crashing the pipeline.
+
+---
+
+### Layer 4 — Data Persistence
+
+**Purpose:**
+Stores all model outputs alongside their metadata into a structured CSV file, supporting incremental saving and crash recovery.
+
+**Tech Stack:**
+| Component | Technology |
+|---|---|
+| Data processing | `pandas` |
+| Logging | `logging` |
+| File path management | `pathlib`, `os` |
+| Timestamp | `datetime` |
+
+**Input:** Scored results from Layer 3
+
+**Output:** `llm_outputs.csv`
+| Column | Description |
+|---|---|
+| `resume_id` | Resume index |
+| `name_id` | Name index |
+| `job_title_id` | Job title index |
+| `race_group` | Racial group label |
+| `model` | Model name/version |
+| `temperature` | Sampling temperature |
+| `score` | LLM-assigned score (0–100) |
+| `rationale` | LLM-generated rationale text |
+| `raw_response` | Raw model output (for debugging) |
+| `timestamp` | Time of model call |
+
+**Error Handling:**
+Unmatched or failed record updates are logged as warnings without interrupting the pipeline. Progress is saved incrementally to support crash recovery.
+
+---
+
+### Layer 5 — Bias Quantification
+
+**Purpose:**
+Analyzes collected scores and rationales using statistical tests and text-based methods to detect and quantify racial bias. Includes a power analysis to determine the minimum sample size required to detect a statistically meaningful effect.
+
+**Tech Stack:**
+| Component | Technology |
+|---|---|
+| Statistical tests | `scipy.stats` |
+| Power analysis | `statsmodels` |
+| Embeddings & PCA | `sklearn` |
+| Visualization | `matplotlib`, `seaborn` |
+| Data processing | `numpy`, `pandas` |
+| Word frequency | `collections.Counter` |
+
+**Input:** `llm_outputs.csv` from Layer 4
+
+**Output:** Statistical results (CSV) and visualizations (PNG) saved to output directory, consolidated into `full_results.csv`
+
+| Method | Output file |
+|---|---|
+| Mean score differences | `descriptive_stats.csv`, `score_distributions.png` |
+| Welch's t-test | `welch_tests.csv`, `welch_pvalues.png` |
+| Cohen's d | `cohens_d.csv` |
+| Disparity ratio | `disparity_ratios.csv` |
+| PMI proxy markers | `pmi_proxy_markers.csv`, `pmi_proxy_markers.png` |
+| Embedding analysis | `embedding_similarity.png`, `embedding_pca.png` |
+| Combined results | `full_results.csv` |
+
+**Error Handling:**
+Each analysis method checks for sufficient data before running and skips if the minimum requirements are not met.
+
+---
 
 # Racial Markers Dataset
 

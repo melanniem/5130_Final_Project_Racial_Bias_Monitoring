@@ -1,8 +1,77 @@
 import pandas as pd
 import json
 import random
+from datetime import datetime
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
+
+
+def fix_dates(resume: dict) -> dict:
+    """
+    Adjust experience and education dates so they don't overlap
+    and education ends before the first job starts
+    """
+    import copy
+    resume = copy.deepcopy(resume)
+
+    experience = resume.get("experience", [])
+    education = resume.get("education", [])
+
+    def parse_date(s):
+        if not s or s in ("Unknown", "N/A", "Present"):
+            return None
+        for fmt in ("%Y-%m-%d", "%Y-%m", "%Y"):
+            try:
+                return datetime.strptime(s[:10], fmt)
+            except ValueError:
+                continue
+        return None
+
+    def fmt_date(dt):
+        return dt.strftime("%Y-%m-%d")
+
+    # Sort experience by start date (earliest first)
+    for exp in experience:
+        exp["_start"] = parse_date(exp.get("dates", {}).get("start", ""))
+    experience = [e for e in experience if e["_start"] is not None]
+    experience.sort(key=lambda e: e["_start"])
+
+    # Make experience dates sequential (no overlaps)
+    for i in range(1, len(experience)):
+        prev_end = parse_date(experience[i - 1].get("dates", {}).get("end", ""))
+        curr_start = experience[i]["_start"]
+        if prev_end and curr_start and curr_start < prev_end:
+            # Shift current start to after previous end
+            new_start = prev_end + relativedelta(months=1)
+            experience[i]["dates"]["start"] = fmt_date(new_start)
+            experience[i]["_start"] = new_start
+            # Also push end forward by the same delta if needed
+            curr_end = parse_date(experience[i].get("dates", {}).get("end", ""))
+            if curr_end and curr_end <= new_start:
+                experience[i]["dates"]["end"] = fmt_date(new_start + relativedelta(years=1))
+
+    # Find earliest job start
+    job_starts = [e["_start"] for e in experience if e["_start"]]
+    earliest_job = min(job_starts) if job_starts else None
+
+    # Fix education: graduation should be before earliest job start
+    for edu in education:
+        grad = parse_date(edu.get("dates", {}).get("expected_graduation", ""))
+        start = parse_date(edu.get("dates", {}).get("start", ""))
+        if earliest_job and grad and grad > earliest_job:
+            # Move graduation to 1 month before first job
+            new_grad = earliest_job - relativedelta(months=1)
+            edu["dates"]["expected_graduation"] = fmt_date(new_grad)
+            # Adjust start too if needed (assume 4 years for bachelors, 2 for masters)
+            if start and start > new_grad:
+                edu["dates"]["start"] = fmt_date(new_grad - relativedelta(years=4))
+
+    # Clean up temp keys
+    for exp in experience:
+        exp.pop("_start", None)
+    resume["experience"] = experience
+
+    return resume
 
 NAMES_CSV_PATH = "data/racial_markers.csv"
 RESUMES_JSONL = "data/master_resumes.jsonl"
@@ -11,6 +80,8 @@ NAMES_PER_GROUP = 57  # names per racial group (matches smallest group: Black = 
 RESUME_SAMPLE_SIZE = 50
 RANDOM_SEED = 42
 
+TEST_NAMES_PER_GROUP = 5
+TEST_RESUME_IDS = [0, 1, 2]  # 3 resumes for test set
 
 # Load Validated Names
 def load_names(path=NAMES_CSV_PATH) -> pd.DataFrame:
@@ -47,8 +118,9 @@ def sample_resumes(all_resumes, sample_size=RESUME_SAMPLE_SIZE, seed=RANDOM_SEED
     return resumes_raw
 
 
-# Converts JSON resume into clean text
+# Convert JSON resume into clean text
 def format_resume(resume: dict, full_name: str) -> str:
+    resume = fix_dates(resume)
     lines = []
 
     # Personal Info
@@ -56,7 +128,8 @@ def format_resume(resume: dict, full_name: str) -> str:
 
     info = resume.get("personal_info", {})
     if info.get("email") and info["email"] != "Unknown":
-        lines.append(f"Email: {info['email']}")
+        name_slug = full_name.lower().replace(" ", ".")
+        lines.append(f"Email: {name_slug}@email.com")
     if info.get("phone") and info["phone"] != "Unknown":
         lines.append(f"Phone: {info['phone']}")
     if info.get("linkedin") and info["linkedin"] != "Unknown":
@@ -145,10 +218,10 @@ def format_resume(resume: dict, full_name: str) -> str:
                 try:
                     from datetime import datetime
                     start_dt = datetime.strptime(start[:7], "%Y-%m")
-                    grad_dt  = datetime.strptime(grad[:7], "%Y-%m")
-                    months   = (grad_dt.year - start_dt.year) * 12 + (grad_dt.month - start_dt.month)
-                    years    = months // 12
-                    rem      = months % 12
+                    grad_dt = datetime.strptime(grad[:7], "%Y-%m")
+                    months = (grad_dt.year - start_dt.year) * 12 + (grad_dt.month - start_dt.month)
+                    years = months // 12
+                    rem = months % 12
                     if rem > 0:
                         duration_str = f"{years} yr {rem} mo"
                     else:
@@ -379,6 +452,17 @@ print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 # Combinations
 def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
+    # Interleave names so identity groups alternate
+    groups = sorted(names_df['identity'].unique())
+    min_size = names_df.groupby('identity').size().min()
+    buckets = {g: df.reset_index(drop=True) for g, df in names_df.groupby('identity')}
+    interleaved = []
+    for i in range(min_size):
+        for g in groups:
+            interleaved.append(buckets[g].iloc[i])
+    names_df = pd.DataFrame(interleaved).reset_index(drop=True)
+    print(f"\nInterleaved {len(names_df)} names, {min_size} per group across {groups}")
+
     input_records = []
     name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
@@ -408,6 +492,85 @@ def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
     print(input_df['job_title'].value_counts())
     return input_df
 
+# Test Combinations Per Ethincity and Resume
+def build_test_combinations(resumes, names_df, job_descriptions,
+                            names_per_group=TEST_NAMES_PER_GROUP,
+                            resume_ids=TEST_RESUME_IDS):
+    """
+    A balanced test set with exactly 5 names per identity group
+    for each job title (Software Engineer, Cybersecurity Analyst, Data Scientist).
+
+    Structure: resume_ids x (5 names x 4 identities) x jobs
+    Expected rows: 3 resumes x 20 names x 3 jobs = 180 rows (x3 repeats = 540)
+    """
+    # Sample top 5 names per identity by mean.correct
+    names_balanced = (
+        names_df.sort_values('mean.correct', ascending=False)
+        .groupby('identity')
+        .head(names_per_group)
+        .reset_index(drop=True)
+    )
+
+    print("\n[Test Set] Names per identity group:")
+    print(names_balanced['identity'].value_counts())
+
+    # Interleave names so identity groups alternate (same as build_combinations)
+    groups = sorted(names_balanced['identity'].unique())
+    buckets = {g: df.reset_index(drop=True) for g, df in names_balanced.groupby('identity')}
+    interleaved = []
+    for i in range(names_per_group):
+        for g in groups:
+            interleaved.append(buckets[g].iloc[i])
+    names_interleaved = pd.DataFrame(interleaved).reset_index(drop=True)
+
+    # Filter resumes to test resume_ids only
+    test_resumes = [resumes[i] for i in resume_ids if i < len(resumes)]
+    print(f"[Test Set] Using resume IDs: {resume_ids}")
+
+    # Build combinations
+    name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
+    job_title_id_map = {job: idx for idx, job in enumerate(job_descriptions.keys())}
+
+    test_records = []
+    for resume_idx, resume in zip(resume_ids, test_resumes):
+        for _, name_row in names_interleaved.iterrows():
+            for job_title, job_desc in job_descriptions.items():
+                try:
+                    resume_text = format_resume(resume, name_row['name'])
+                    if not resume_text:
+                        print(f"FAILED: resume_id={resume_idx}, job={job_title}, review format_resume() in input_layer.py")
+                        resume_text = ""
+                except Exception as e:
+                    if resume_idx == 0:
+                        import traceback
+                        traceback.print_exc()
+                    resume_text = ""
+                test_records.append({
+                    "resume_id": resume_idx,
+                    "name_id": name_id_map.get(name_row['name'], -1),
+                    "job_title_id": job_title_id_map[job_title],
+                    "name": name_row['name'],
+                    "first": name_row['first'],
+                    "last": name_row['last'],
+                    "identity": name_row['identity'],
+                    "mean_correct": name_row['mean.correct'],
+                    "job_title": job_title,
+                    "resume_text": resume_text,
+                    "job_description": job_desc
+                })
+
+    test_df = pd.DataFrame(test_records)
+
+    print(f"\n[Test Set] Total combinations: {len(test_df)}")
+    print(f"  = {len(resume_ids)} resumes x {names_per_group * len(groups)} names x {len(job_descriptions)} jobs")
+    print("\n[Test Set] By identity:")
+    print(test_df['identity'].value_counts())
+    print("\n[Test Set] By job title:")
+    print(test_df['job_title'].value_counts())
+    print("\n[Test Set] By resume_id:")
+    print(test_df['resume_id'].value_counts())
+
+    return test_df
 
 # Output
 def run_input_layer():
@@ -420,3 +583,15 @@ def run_input_layer():
     input_df.to_csv(OUTPUT_PATH, index=False)
     print(f"\nSaved {len(input_df)} records to '{OUTPUT_PATH}'")
     return input_df
+
+# Run Test Layer
+def run_test_input_layer():
+    names_df = load_names()
+    all_resumes = load_resumes(RESUMES_JSONL)
+
+    test_df = build_test_combinations(all_resumes, names_df, JOB_DESCRIPTIONS)
+
+    output_path = "input_combinations.csv"
+    test_df.to_csv(output_path, index=False)
+    print(f"\nSaved {len(test_df)} test records to '{output_path}'")
+    return test_df

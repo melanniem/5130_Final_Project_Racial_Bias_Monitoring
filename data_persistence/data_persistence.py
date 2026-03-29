@@ -81,6 +81,14 @@ class DataPersistence:
         except Exception as e:
             logger.error(f"Error updating resume_id={resume_id} in llm_outputs: {e}")
 
+    def reset_scores(self):
+        """
+        Clear all prior scores so only the current run's results are kept.
+        """
+        for col in ["model", "temperature", "score", "rationale", "raw_response", "timestamp"]:
+            self.df[col] = None
+        logger.info("Reset all scores for new run")
+    
     def append_batch(self, results: list):
         """
         Append a list of results to llm_outputs dataframe

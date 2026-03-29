@@ -37,6 +37,38 @@ def load_and_built_prompt():
     print("Prompts generated for all records.")
     return input_df
 
+# Build null name baseline prompts
+def build_null_baseline_prompts(input_df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Take one entry per resume+job combination and strip the name
+    from resume_text to create a null baseline condition.
+    """
+    # One row per unique resume+job — no need for multiple name variants
+    baseline_df = input_df.drop_duplicates(subset=['resume_id', 'job_title_id']).copy()
+ 
+    # Strip the name from resume_text using the existing name field
+    baseline_df['resume_text'] = baseline_df.apply(
+        lambda row: row['resume_text'].replace(row['name'], 'Applicant'), axis=1
+    )
+ 
+    # Rebuild the prompt with the name-stripped resume
+    baseline_df['prompt'] = baseline_df.apply(
+        lambda row: build_prompt(row['resume_text'], row['job_title'], row['job_description']),
+        axis=1
+    )
+ 
+    # Tag as null baseline
+    baseline_df['identity']     = 'Null Baseline'
+    baseline_df['name']         = 'Applicant'
+    baseline_df['first']        = 'Applicant'
+    baseline_df['last']         = ''
+    baseline_df['mean_correct'] = None  # not meaningful without a racially associated name
+    baseline_df['name_id']      = baseline_df.apply(
+        lambda row: f"null_{row['resume_id']}_{row['job_title_id']}", axis=1
+    )
+ 
+    return baseline_df
+
 # Verify Prompt Consistency
 def verify_prompt(input_df):
     random.seed(RANDOM_SEED)
@@ -67,6 +99,12 @@ def verify_prompt(input_df):
 def run_prompt_layer():
     input_df = load_and_built_prompt()
     verify_prompt(input_df)
+
+    # Generate and append null baseline rows
+    baseline_df = build_null_baseline_prompts(input_df)
+    input_df = pd.concat([input_df, baseline_df], ignore_index=True)
+    print(f"Appended {len(baseline_df)} null baseline prompts.")
+
     save_cols = ['resume_id', 'name_id', 'name', 'first', 'last', 'identity',
                  'mean_correct', 'job_title_id', 'job_title', 'prompt']
     input_df[save_cols].to_csv(OUTPUT_PATH, index=False)

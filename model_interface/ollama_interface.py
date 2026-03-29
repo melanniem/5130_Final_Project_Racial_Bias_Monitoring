@@ -58,6 +58,7 @@ class OllamaQwen:
     def score_batch(self, prompt_list):
         results = []
         for item in prompt_list:
+            print(f"Running prompt {item}/{len(prompt_list)}")
             result = self.score_resume(
                 prompt=item["prompt"],
                 resume_id=item["resume_id"],

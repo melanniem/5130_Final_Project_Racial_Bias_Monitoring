@@ -1,19 +1,20 @@
 from input_layer import input as input_layer
 from data_persistence import data_persistence
-#from model_interface import gemini_interface
 from model_interface import ollama_interface
 from prompt_layer import prompt_standardization
 from bias_analysis import bias_quantification
 import logging
 import pandas as pd
 from pathlib import Path
-#from dotenv import load_dotenv
 import os
 import json
+import random
 
 INPUT_PATH = "input_combinations.csv"
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
+RACE_GROUPS = ["White", "Black or African American", "Hispanic", "Asian or Pacific Islander", "Null Baseline"]
+JOB_IDS = [0, 1, 2]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -25,6 +26,97 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+def sample_balanced(prompt_list, job_id, per_group):
+    """
+    Sample exactly per_group prompts per race for the given job_id.
+    """
+    sampled = []
+    for race in RACE_GROUPS:
+        race_prompts = [
+            p for p in prompt_list
+            if p["race_group"] == race and str(p["job_title_id"]) == str(job_id)
+        ]
+        if len(race_prompts) < per_group:
+            logger.warning(f"Only {len(race_prompts)} prompts available for {race} "
+                           f"(job {job_id}), need {per_group}")
+        sampled.extend(random.sample(race_prompts, min(per_group, len(race_prompts))))
+    random.shuffle(sampled)
+    return sampled
+ 
+
+def score_with_retries(client, prompt_pool, per_group, job_id, max_retries=3):
+    """
+    Score prompts and retry failures until every race group has exactly
+    per_group successful scores, or retries are exhausted.
+ 
+    Returns only the successful results which are guaranteed balanced if enough
+    source prompts exist and the LLM doesn't fail persistently.
+    """
+    # Track successful results per group and which prompt keys have been used
+    successful = {race: [] for race in RACE_GROUPS}
+    used_keys = set()  # (resume_id, name_id) pairs already attempted
+ 
+    # Build per-race prompt pools (all available prompts for this job)
+    race_pools = {}
+    for race in RACE_GROUPS:
+        race_pools[race] = [
+            p for p in prompt_pool
+            if p["race_group"] == race and str(p["job_title_id"]) == str(job_id)
+        ]
+        random.shuffle(race_pools[race])
+ 
+    for attempt in range(1, max_retries + 1):
+        # Figure out how many more successes each group needs
+        needed = {
+            race: per_group - len(successful[race])
+            for race in RACE_GROUPS
+        }
+ 
+        # If every group is full, we're done
+        if all(n <= 0 for n in needed.values()):
+            break
+ 
+        # Build this attempt's batch from unused prompts
+        batch = []
+        for race in RACE_GROUPS:
+            if needed[race] <= 0:
+                continue
+            available = [
+                p for p in race_pools[race]
+                if (p["resume_id"], p["name_id"]) not in used_keys
+            ]
+            pick = available[:needed[race]]
+            batch.extend(pick)
+            for p in pick:
+                used_keys.add((p["resume_id"], p["name_id"]))
+ 
+        if not batch:
+            logger.warning(f"Attempt {attempt}: no unused prompts left to retry")
+            break
+ 
+        random.shuffle(batch)
+        logger.info(f"Attempt {attempt}: scoring {len(batch)} prompts "
+                    f"(need {sum(n for n in needed.values() if n > 0)} more successes)")
+ 
+        results = client.score_batch(batch)
+ 
+        # Sort successes into the right group bucket
+        for r in results:
+            race = r["race_group"]
+            if r["score"] is not None and len(successful[race]) < per_group:
+                successful[race].append(r)
+ 
+    # Log final counts
+    for race in RACE_GROUPS:
+        count = len(successful[race])
+        status = "OK" if count == per_group else "SHORT"
+        logger.info(f"  {race}: {count}/{per_group} [{status}]")
+ 
+    # Flatten into a single list
+    all_results = []
+    for race in RACE_GROUPS:
+        all_results.extend(successful[race])
+    return all_results
 
 if __name__ == "__main__":
     RESULTS_PATH = Path("results")
@@ -47,10 +139,6 @@ if __name__ == "__main__":
         print(prompt_df.head())
         logger.info(f"Generated {len(prompt_df)} prompts dataframe")
 
-        # Initialize Gemini
-        # load_dotenv()
-        # client = gemini_interface.Gemini(api_key=os.environ['GEMINI_API_KEY'])
-
         # Initialize Ollama LLM
         client = ollama_interface.OllamaQwen()
         logger.info("Initialized Ollama Qwen client")
@@ -70,15 +158,22 @@ if __name__ == "__main__":
             output_path="llm_outputs.csv"
         )
 
-        logger.info(f"Scoring {len(prompt_list)} prompts via LLM...")
-        # results = client.score_batch(prompt_list) # For running whole pipeline
-        results = client.score_batch(prompt_list[:2]) # Test few prompts
-
-        logger.info(f"Scoring complete. {sum(1 for r in results if r['score'] is not None)} succeeded, "
-                    f"{sum(1 for r in results if r['score'] is None)} failed.")
-
-        persistence.append_batch(results)
+        per_group = 50
+        all_results = []
+ 
+        for job_id in JOB_IDS:
+            logger.info(f"Scoring job_id={job_id} — {per_group} per group x {len(RACE_GROUPS)} groups = {per_group * len(RACE_GROUPS)} prompts")
+            job_results = score_with_retries(
+                client, prompt_list, per_group, job_id, max_retries=3
+            )
+            logger.info(f"job_id={job_id}: {len(job_results)} results collected")
+            all_results.extend(job_results)
+ 
+        logger.info(f"Final balanced set: {len(all_results)} results across {len(JOB_IDS)} jobs")
+        persistence.reset_scores()
+        persistence.append_batch(all_results)
         logger.info(f"Saved results via DataPersistence to {persistence.output_path}")
+
     else:
         logger.info("Skipping LLM scoring, using existing results from results/llm_outputs.csv")
 
