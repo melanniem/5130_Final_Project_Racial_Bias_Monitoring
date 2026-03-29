@@ -60,6 +60,21 @@ class BiasQuantification:
         Helper to get scores for a single group.
         """
         return self.scores[self.groups == group]
+    
+    def combine_outputs(output_dir):
+        files = ['descriptive_stats.csv', 'welch_tests.csv', 'cohens_d.csv', 'disparity_ratios.csv']
+        
+        dfs = [pd.read_csv(os.path.join(output_dir, f)) for f in files]
+        
+        # Interleave empty separator columns between each dataframe
+        separated = []
+        for i, df in enumerate(dfs):
+            separated.append(df.reset_index(drop=True))
+            if i < len(dfs) - 1:
+                separated.append(pd.DataFrame({'': [''] * max(len(d) for d in dfs)}))
+        
+        combined = pd.concat(separated, axis=1)
+        combined.to_csv(os.path.join(output_dir, 'full_results.csv'), index=False)
 
     # 1. Mean Score Differences
 
@@ -428,6 +443,7 @@ class BiasQuantification:
         self.disparity_ratio()
         self.compute_pmi()
         self.embedding_analysis()
+        self.combine_outputs()
         print("=" * 40)
         print(f"DONE - All outputs in: {self.output_dir}/")
         print("=" * 40)
