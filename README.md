@@ -1,7 +1,7 @@
 # Final Project
 
 ## Overview
-This project investigates whether Large Language Models (LLMs) exhibit racial bias in automated resume screening by replacing the candidate's name as racail proxies across otherwise identical resumes, and analyzing score disparities across racial groups.
+This project investigates whether Large Language Models (LLMs) exhibit racial bias in automated resume screening by replacing the candidate's name as a racial proxy across otherwise identical resumes, and analyzing score disparities across racial groups.
 
 The pipeline is designed as a **five-layer modular system**:
 - Input Layer
