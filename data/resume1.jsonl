@@ -1,0 +1,203 @@
+{
+  "personal_info": {
+    "name": "Unknown",
+    "email": "dev.sharma@email.com",
+    "phone": "+91-9876543210",
+    "linkedin": "linkedin.com/in/devsharma",
+    "github": "github.com/devsharma",
+    "location": {"city": "Pune", "country": "India", "remote_preference": "hybrid"},
+    "summary": "Full-stack Software Engineer with 4 years of experience building scalable systems, REST APIs, and data pipelines. Proficient in Python, Java, and cloud infrastructure."
+  },
+  "experience": [
+    {
+      "company": "Infosys Ltd",
+      "company_info": {"industry": "IT Services", "size": "Large"},
+      "title": "Software Engineer",
+      "level": "mid",
+      "employment_type": "full-time",
+      "dates": {"start": "2020-06", "end": "Present", "duration": "4 years", "notice_period": "60 days"},
+      "responsibilities": [
+        "Designed and developed RESTful APIs in Python and Java serving 500k+ daily requests.",
+        "Built and maintained CI/CD pipelines using Jenkins and Docker, reducing deployment time by 40%.",
+        "Collaborated with cross-functional teams in Agile sprints to deliver features on schedule.",
+        "Optimized MySQL and PostgreSQL queries, improving report generation speed by 35%.",
+        "Conducted code reviews and mentored two junior developers on best practices."
+      ],
+      "technical_environment": {
+        "technologies": ["Python", "Java", "REST API", "Django", "Spring Boot", "Docker", "Jenkins"],
+        "methodologies": ["Agile", "Scrum", "CI/CD"],
+        "tools": ["Git", "Jira", "Postman", "IntelliJ IDEA", "VS Code"],
+        "operating_systems": ["Linux", "Ubuntu", "Windows"],
+        "databases": ["MySQL", "PostgreSQL", "Redis"]
+      }
+    },
+    {
+      "company": "TechMinds Solutions",
+      "company_info": {"industry": "Software Consulting", "size": "Small"},
+      "title": "Junior Developer",
+      "level": "junior",
+      "employment_type": "full-time",
+      "dates": {"start": "2018-07", "end": "2020-05", "duration": "1 year 10 months", "notice_period": "30 days"},
+      "responsibilities": [
+        "Developed and maintained Java-based web applications using JSP and Servlets.",
+        "Wrote unit tests using JUnit, achieving 80% code coverage across core modules.",
+        "Assisted in migrating legacy codebase from Ant to Maven build system.",
+        "Supported client-facing demos and prepared technical documentation."
+      ],
+      "technical_environment": {
+        "technologies": ["Java", "JSP", "Servlets", "Hibernate", "HTML", "CSS", "JavaScript", "jQuery"],
+        "methodologies": ["Waterfall", "OOP"],
+        "tools": ["Eclipse", "NetBeans", "Apache Tomcat", "SVN"],
+        "operating_systems": ["Windows", "CentOS"],
+        "databases": ["MySQL", "Oracle"]
+      }
+    }
+  ],
+  "education": [
+    {
+      "degree": {"level": "B.E.", "field": "Computer Engineering", "major": "Software Systems"},
+      "institution": {
+        "name": "Savitribai Phule Pune University",
+        "location": "Pune, Maharashtra, India",
+        "accreditation": "NAAC A+"
+      },
+      "dates": {"start": "2014-08", "expected_graduation": "2018-06"},
+      "achievements": {
+        "gpa": 8.4,
+        "honors": "First Class with Distinction",
+        "relevant_coursework": ["Data Structures", "Operating Systems", "Database Management", "Computer Networks", "Software Engineering"]
+      }
+    }
+  ],
+  "skills": {
+    "technical": {
+      "programming_languages": [
+        {"name": "Python", "level": "advanced"},
+        {"name": "Java", "level": "advanced"},
+        {"name": "JavaScript", "level": "intermediate"},
+        {"name": "SQL", "level": "intermediate"},
+        {"name": "C++", "level": "beginner"}
+      ],
+      "frameworks": [
+        {"name": "Django", "level": "advanced"},
+        {"name": "Spring Boot", "level": "intermediate"},
+        {"name": "Hibernate", "level": "intermediate"},
+        {"name": "React", "level": "beginner"}
+      ],
+      "databases": [
+        {"name": "MySQL", "level": "advanced"},
+        {"name": "PostgreSQL", "level": "intermediate"},
+        {"name": "Redis", "level": "beginner"},
+        {"name": "MongoDB", "level": "beginner"}
+      ],
+      "cloud": [
+        {"name": "AWS EC2", "level": "intermediate"},
+        {"name": "AWS S3", "level": "intermediate"},
+        {"name": "Docker", "level": "intermediate"},
+        {"name": "Kubernetes", "level": "beginner"}
+      ]
+    },
+    "languages": [
+      {"name": "English", "level": "fluent"},
+      {"name": "Hindi", "level": "native"},
+      {"name": "Marathi", "level": "native"}
+    ],
+    "other": [
+      {"name": "Technical Documentation"},
+      {"name": "System Design"},
+      {"name": "Code Review"}
+    ],
+    "tools": [
+      {"name": "Git"},
+      {"name": "Jenkins"},
+      {"name": "Jira"},
+      {"name": "Postman"},
+      {"name": "Docker"}
+    ],
+    "methodologies": [
+      {"name": "Agile/Scrum"},
+      {"name": "CI/CD"},
+      {"name": "Test-Driven Development"}
+    ],
+    "testing": [
+      {"name": "JUnit"},
+      {"name": "PyTest"},
+      {"name": "Selenium"}
+    ]
+  },
+  "projects": [
+    {
+      "name": "Inventory Management API",
+      "description": "Built a RESTful API service for real-time inventory tracking across 12 warehouses, with role-based access control and audit logging.",
+      "technologies": ["Python", "Django", "PostgreSQL", "Redis", "Docker"],
+      "role": "Lead Developer",
+      "url": "github.com/devsharma/inventory-api",
+      "impact": "Reduced stock discrepancy reports by 60% within first quarter of deployment."
+    },
+    {
+      "name": "Log Anomaly Detector",
+      "description": "Developed a pipeline that ingests application logs, parses them with regex, and flags anomalies using a simple statistical model.",
+      "technologies": ["Python", "Pandas", "Scikit-learn", "Elasticsearch"],
+      "role": "Solo Developer",
+      "url": "github.com/devsharma/log-anomaly",
+      "impact": "Caught 3 production incidents 20 minutes before they escalated to user-facing outages."
+    }
+  ],
+  "achievements": [
+    "Awarded 'Best New Engineer' at Infosys internal hackathon 2021, Pune.",
+    "Published a tech blog post on Django REST Framework optimization with 4,000+ views.",
+    "Led the college team to runner-up position at Smart India Hackathon 2018."
+  ],
+  "publications": [
+    {
+      "title": "Efficient API Rate Limiting Strategies in Django",
+      "conference": "PyCon India 2022",
+      "date": "2022-09",
+      "location": "Hyderabad, India"
+    }
+  ],
+  "workshops": [
+    {
+      "name": "Cloud Native Development with AWS",
+      "issuer": "Amazon Web Services",
+      "date": "2022-03",
+      "duration": "3 days",
+      "location": "Pune, India",
+      "description": "Completed hands-on workshop covering EC2, S3, Lambda, and RDS deployment patterns."
+    },
+    {
+      "name": "Docker and Kubernetes for Developers",
+      "issuer": "CNCF India",
+      "date": "2021-11",
+      "duration": "2 days",
+      "location": "Online",
+      "description": "Completed workshop on containerization and orchestration fundamentals using Docker and Kubernetes."
+    }
+  ],
+  "internships": [
+    {
+      "title": "Software Development Intern",
+      "company": "Wipro Technologies",
+      "role": "Backend Developer",
+      "dates": {"start": "2017-12", "end": "2018-05"},
+      "description": "Worked on internal HR portal backend, implementing leave management and attendance tracking modules.",
+      "technologies": ["Java", "Spring MVC", "MySQL", "HTML", "CSS"],
+      "impact": "Delivered leave management module 2 weeks ahead of schedule, adopted by 300+ employees.",
+      "projects": [
+        {
+          "name": "HR Leave Management Module",
+          "description": "End-to-end leave request, approval workflow, and reporting dashboard for HR administrators.",
+          "role": "Developer",
+          "technologies": ["Java", "Spring MVC", "MySQL", "Thymeleaf"],
+          "impact": "Automated a previously manual process saving HR team approximately 8 hours per week."
+        }
+      ]
+    }
+  ],
+  "teaching_experience": [
+    {
+      "subjects": ["Data Structures", "Java Programming", "Web Development Basics"]
+    }
+  ],
+  "certifications": "AWS Certified Developer - Associate | Amazon Web Services | 2022. Oracle Certified Associate Java SE 8 | Oracle | 2019. Python for Everybody | Coursera / University of Michigan | 2020."
+}
