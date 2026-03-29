@@ -12,6 +12,12 @@ The pipeline is designed as a **five-layer modular system**:
 
 ---
 
+## Scalability Estimate
+The baseline experimental design generates:
+1 resume × 50 names × 5 groups (4 racial + 1 null baseline) × 3 jobs = 750 prompts
+
+---
+
 ## Technical Stack
 
 | Component | Technology |
@@ -31,10 +37,9 @@ The pipeline is designed as a **five-layer modular system**:
 
 ### Layer 1 — Input Layer
 
-**Purpose:** Loads resume and name data, injects racial-marker names into resumes, and generates all resume x name x job combinations for evaluation.
+**Purpose:** Loads resume and name data, injects racial-marker names into resume, and generates resume x names x jobs combinations for evaluation.
 
 **Tech Stack:**
-
 | Component | Technology |
 |---|---|
 | Data processing | `pandas` |
@@ -62,13 +67,13 @@ The pipeline is designed as a **five-layer modular system**:
 | `job_description` | Full job description text |
 
 **Error Handling:**
-Missing or malformed fields are silently skipped and date parsing failures are handled gracefully to ensure the pipeline continues processing remaining records.
+Missing or malformed fields are silently skipped, and date parsing failures are handled gracefully to ensure the pipeline continues processing remaining records.
 
 ---
 
 ### Layer 2 — Prompt Standardization
 
-**Purpose:** Converts each resume x name x job combination into a standardized evaluation prompt, and verifies that prompts for the same resume-job pair differ only by candidate name.
+**Purpose:** Converts resume x names x jobs combination into a standardized evaluation prompt, and verifies that prompts for the same resume-job pair differ only by candidate name.
 
 **Prompt format:**
 
@@ -80,8 +85,6 @@ Each prompt instructs the LLM to act as an expert HR recruiter and evaluate the 
   "rationale": "<one to two sentences, max 100 words>"
 }
 ```
-
-This structured format ensures consistent, machine-parseable output across all API calls.
 
 **Tech Stack:**
 | Component | Technology |
@@ -197,26 +200,6 @@ Analyzes collected scores and rationales using statistical tests and text-based 
 
 **Error Handling:**
 Each analysis method checks for sufficient data before running and skips if the minimum requirements are not met.
-
----
-
-## Scalability Estimate
-
-Baseline:
-```
-50 resumes × without name × 3 job titles = 150 prompts
-```
-Test:
-
-```
-50 resumes × 228 names (57 per group × 4 groups) × 3 job titles = 34,200 prompts
-```
-
-Full dataset:
-
-```
-4,817 resumes × 228 names × 3 job titles = 3,295,632 prompts
-```
 
 ---
 
