@@ -1,7 +1,7 @@
 # Final Project
 
 ## Overview
-This project investigates whether Large Language Models (LLMs) exhibit racial bias in automated resume screening by replacing the candidate's name as racail proxies across otherwise identical resumes, and analyzing score disparities across racial groups.
+This project investigates whether Large Language Models (LLMs) exhibit racial bias in automated resume screening by replacing the candidate's name as a racial proxy across otherwise identical resumes, and analyzing score disparities across racial groups.
 
 The pipeline is designed as a **five-layer modular system**:
 - Input Layer
@@ -25,10 +25,10 @@ The baseline experimental design generates:
 | Language | Python 3.10+ |
 | Data manipulation | pandas |
 | LLM API | Ollama (`qwen2.5:7b`) & Ollama (...) |
-| Resume dataset | HuggingFace (`datasetmaster/resumes`, 4,817 resumes) |
+| Resume dataset | resume1.jsonl (single resume) |
 | Name dataset | Crabtree et al. (2023) validated racial name dataset |
 | Statistical analysis | scipy, numpy |
-| Embeddings | sentence-transformers |
+| Embeddings | sklearn (TF-IDF, PCA) |
 | Output format | CSV |
 
 ---
@@ -49,7 +49,7 @@ The baseline experimental design generates:
 
 **Input:**
 - `data/racial_markers.csv` — columns: `name`, `first`, `last`, `identity`, `mean.correct`
-- `data/master_resumes.jsonl` — one JSON resume object per line
+- `data/resume1.jsonl` — one JSON resume
 
 **Output:** 
 | Column | Description |
