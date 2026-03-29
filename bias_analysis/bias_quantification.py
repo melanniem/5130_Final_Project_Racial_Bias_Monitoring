@@ -232,6 +232,62 @@ class BiasQuantification:
 
     # 5. PMI (Pointwise Mutual Information) Proxy Markers
 
+        # Filler words and common first names to exclude from PMI calculation
+    _PMI_STOPWORDS = {
+        # English stopwords / filler words
+        "a", "an", "the", "and", "or", "but", "if", "in", "on", "at", "to",
+        "for", "of", "with", "by", "from", "as", "is", "was", "are", "were",
+        "be", "been", "being", "have", "has", "had", "do", "does", "did",
+        "will", "would", "shall", "should", "may", "might", "must", "can",
+        "could", "not", "no", "nor", "so", "yet", "both", "each", "few",
+        "more", "most", "other", "some", "such", "than", "too", "very",
+        "just", "also", "about", "above", "after", "again", "all", "any",
+        "because", "before", "below", "between", "during", "further",
+        "here", "how", "into", "its", "it", "itself", "me", "my", "myself",
+        "once", "only", "out", "over", "own", "same", "she", "he", "her",
+        "him", "his", "hers", "that", "them", "then", "there", "these",
+        "they", "this", "those", "through", "under", "until", "up", "we",
+        "what", "when", "where", "which", "while", "who", "whom", "why",
+        "you", "your", "yours", "our", "ours", "their", "theirs", "i",
+        "it's", "don't", "doesn't", "didn't", "won't", "wouldn't", "isn't",
+        "aren't", "wasn't", "weren't", "hasn't", "haven't", "hadn't",
+        "shouldn't", "couldn't", "can't", "mustn't", "let's", "that's",
+        "who's", "what's", "here's", "there's", "when's", "where's",
+        "why's", "how's", "i'm", "you're", "he's", "she's", "we're",
+        "they're", "i've", "you've", "we've", "they've", "i'd", "you'd",
+        "he'd", "she'd", "we'd", "they'd", "i'll", "you'll", "he'll",
+        "she'll", "we'll", "they'll",
+        # Common filler / low-signal words in rationale text
+        "however", "therefore", "although", "though", "overall", "well",
+        "rather", "still", "much", "many", "like", "even", "within",
+        "across", "along", "either", "neither", "whether", "since",
+        "without", "among", "upon", "around", "toward", "towards",
+        "throughout", "already", "always", "never", "often", "sometimes",
+        "perhaps", "likely", "unlikely", "given", "based", "particularly",
+        "especially", "specifically", "generally", "additionally",
+        "furthermore", "moreover", "thus", "hence", "thereby", "whereas",
+        "nonetheless", "nevertheless", "despite", "regarding", "including",
+        "noted", "note", "notes", "seems", "seem", "seemed", "appears",
+        "appear", "appeared", "provides", "provide", "provided", "shows",
+        "show", "showed", "suggests", "suggest", "suggested", "indicates",
+        "indicate", "indicated", "demonstrates", "demonstrate",
+        "demonstrated", "candidate", "candidates", "resume", "score",
+        "scoring", "evaluation", "assessment",
+    }
+
+    def _build_name_set(self):
+        """
+        Dynamically builds a set of names to exclude from PMI using the
+        'first' and 'last' columns in the input CSV.
+        """
+        names = set()
+        for col in ("first", "last"):
+            if col in self.df.columns:
+                names.update(
+                    self.df[col].dropna().astype(str).str.lower().str.strip().unique()
+                )
+        return names
+
     def compute_pmi(self, min_count=5): # Ignores terms that appear less than five times
         """
         Pointwise Mutual Information Computation: 
@@ -240,6 +296,8 @@ class BiasQuantification:
         print("=" * 40)
         print("5. PMI PROXY MARKERS")
         print("=" * 40)
+ 
+        skip_terms = self._PMI_STOPWORDS | self._build_name_set()  # Combined exclusion set
  
         rationales = self.df["rationale"].fillna("").tolist() # Converts Rationales to list, fills NA with empty string (so code does not crash)
         group_list = self.df["race_group"].tolist() # Converts racial group name to list
