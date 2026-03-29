@@ -58,7 +58,7 @@ class OllamaQwen:
     def score_batch(self, prompt_list):
         results = []
         for item in prompt_list:
-            print(f"Running prompt {item}/{len(prompt_list)}")
+            #print(f"Running prompt {item}/{len(prompt_list)}")
             result = self.score_resume(
                 prompt=item["prompt"],
                 resume_id=item["resume_id"],
@@ -67,6 +67,6 @@ class OllamaQwen:
                 job_title_id=item.get("job_title_id"),
             )
             results.append(result)
-            time.sleep(0.5)
+            time.sleep(0.2)
 
         return results
