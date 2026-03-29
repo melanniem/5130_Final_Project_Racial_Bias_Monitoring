@@ -4,6 +4,7 @@ import random
 from datetime import datetime
 from dateutil import parser
 from dateutil.relativedelta import relativedelta
+from faker import Faker
 
 
 def fix_dates(resume: dict) -> dict:
@@ -85,8 +86,34 @@ TEST_RESUME_IDS = [0, 1, 2]  # 3 resumes for test set
 
 # Load Validated Names
 def load_names(path=NAMES_CSV_PATH) -> pd.DataFrame:
-    names_df = pd.read_csv(NAMES_CSV_PATH)
-    print("Names per group (full dataset):")
+    # Read real names
+    names_df = pd.read_csv(NAMES_CSV_PATH, synthetic_per_group=50)
+
+    fake = Faker()
+    synthetic_rows = []
+
+    # Generate synthetic names per racial group
+    for identity in names_df.race.unique():
+        for _ in range(synthetic_per_group):
+            first = fake.first_name()
+            last = fake.last_name()
+            full_name = f"{first} {last}"
+
+            synthetic_rows.append({
+                "name": full_name,
+                "first": first,
+                "last": last,
+                "identity": identity,  # keep same group structure
+                "mean.correct": 0.5
+            })
+    synthetic_df = pd.DataFrame(synthetic_rows)
+
+    print("Names per group natural (full dataset):")
+    print(names_df['identity'].value_counts())
+
+    names_df = pd.concat([names_df, synthetic_df])
+
+    print("Names per group natural + synthetic (full dataset):")
     print(names_df['identity'].value_counts())
     print(f"Total: {len(names_df)}")
     return names_df
