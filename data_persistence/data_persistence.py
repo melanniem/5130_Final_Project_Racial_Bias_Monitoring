@@ -22,6 +22,7 @@ class DataPersistence:
     def __init__(self, DATA_PATH: Path, input_path="prompts_output.csv", output_path="llm_outputs.csv"):
         self.input_path = os.path.join(DATA_PATH, input_path)
         self.output_path = os.path.join(DATA_PATH, output_path)
+        self._append_count = 0
 
         if os.path.exists(self.output_path):
             self.df = pd.read_csv(self.output_path)
@@ -72,7 +73,8 @@ class DataPersistence:
                 self.df.at[idx, col] = result.get(col)
             self.df.at[idx, "timestamp"] = result.get("timestamp", datetime.now())
 
-            if len(self.df) % save_every == 0:
+            self._append_count += 1
+            if self._append_count % save_every == 0:
                 self.save()
                 logger.info(f"Auto saved at {len(self.df)} rows")
             logger.info(
