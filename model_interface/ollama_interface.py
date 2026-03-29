@@ -42,7 +42,6 @@ class OllamaQwen:
             except Exception as e:
                 if attempt == retries - 1:
                     return {
-                        "resume_id": resume_id,
                         "race_group": race_group,
                         "name_id": name_id,
                         "job_title_id": job_title_id,
@@ -61,7 +60,6 @@ class OllamaQwen:
             #print(f"Running prompt {item}/{len(prompt_list)}")
             result = self.score_resume(
                 prompt=item["prompt"],
-                resume_id=item["resume_id"],
                 race_group=item["race_group"],
                 name_id=item.get("name_id"),
                 job_title_id=item.get("job_title_id"),

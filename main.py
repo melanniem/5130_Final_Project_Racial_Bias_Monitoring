@@ -83,12 +83,12 @@ def score_with_retries(client, prompt_pool, per_group, job_id, max_retries=3):
                 continue
             available = [
                 p for p in race_pools[race]
-                if (p["resume_id"], p["name_id"]) not in used_keys
+                if (p["name_id"]) not in used_keys
             ]
             pick = available[:needed[race]]
             batch.extend(pick)
             for p in pick:
-                used_keys.add((p["resume_id"], p["name_id"]))
+                used_keys.add(p["name_id"])
  
         if not batch:
             logger.warning(f"Attempt {attempt}: no unused prompts left to retry")
@@ -146,7 +146,6 @@ if __name__ == "__main__":
         # Data Logging and Resume Scoring
         prompt_list = prompt_df.apply(lambda row: {
             "prompt": row["prompt"],
-            "resume_id": row["resume_id"],
             "name_id": row["name_id"],
             "job_title_id": row["job_title_id"],
             "race_group": row["race_group"]

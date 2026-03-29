@@ -40,7 +40,7 @@ class DataPersistence:
             self.df["raw_response"] = self.df["raw_response"].astype(object)
         else:
             self.df = pd.DataFrame(columns=[
-                "resume_id", "name_id", "job_title_id", "race_group", "model", "temperature", "score", "rationale", "raw_response", "timestamp"
+                "name_id", "job_title_id", "race_group", "model", "temperature", "score", "rationale", "raw_response", "timestamp"
             ])
             logger.info("No input file found, creating new file llm_outputs")
 
@@ -50,21 +50,19 @@ class DataPersistence:
         :param result:
         :return:
         """
-        resume_id = result.get("resume_id")
         name_id = result.get("name_id")
         job_title_id = result.get("job_title_id")
         race_group = result.get("race_group")
 
         match = self.df[
-            (self.df["resume_id"] == resume_id)
-            & (self.df["name_id"] == name_id)
+            (self.df["name_id"] == name_id)
             & (self.df["job_title_id"] == job_title_id)
             & (self.df["race_group"] == race_group)
             ]
 
         if match.empty:
             logger.warning(
-                f"No matching row found for resume_id={resume_id}, name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
+                f"No matching row found for name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
             return
 
         try:
@@ -78,10 +76,10 @@ class DataPersistence:
                 self.save()
                 logger.info(f"Auto saved at {len(self.df)} rows")
             logger.info(
-                f"Updated row for resume_id={resume_id}, name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
+                f"Updated row for name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
 
         except Exception as e:
-            logger.error(f"Error updating resume_id={resume_id} in llm_outputs: {e}")
+            logger.error(f"Error updating resume for name_id: {name_id} in llm_outputs: {e}")
 
     def reset_scores(self):
         """
