@@ -85,15 +85,15 @@ TEST_NAMES_PER_GROUP = 5
 TEST_RESUME_IDS = [0, 1, 2]  # 3 resumes for test set
 
 # Load Validated Names
-def load_names(path=NAMES_CSV_PATH) -> pd.DataFrame:
+def load_names(path=NAMES_CSV_PATH, synthetic_per_group=50) -> pd.DataFrame:
     # Read real names
-    names_df = pd.read_csv(NAMES_CSV_PATH, synthetic_per_group=50)
+    names_df = pd.read_csv(NAMES_CSV_PATH)
 
     fake = Faker()
     synthetic_rows = []
 
     # Generate synthetic names per racial group
-    for identity in names_df.race.unique():
+    for identity in names_df["identity"].unique():
         for _ in range(synthetic_per_group):
             first = fake.first_name()
             last = fake.last_name()
