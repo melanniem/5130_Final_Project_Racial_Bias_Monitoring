@@ -1,13 +1,11 @@
 from input_layer import input as input_layer
 from data_persistence import data_persistence
-#from model_interface import gemini_interface
 from model_interface import ollama_interface
 from prompt_layer import prompt_standardization
 from bias_analysis import bias_quantification
 import logging
 import pandas as pd
 from pathlib import Path
-#from dotenv import load_dotenv
 import os
 import json
 import random
@@ -15,7 +13,8 @@ import random
 INPUT_PATH = "input_combinations.csv"
 LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
-RACE_GROUPS = ["White", "Black or African American", "Hispanic", "Asian or Pacific Islander"]
+RACE_GROUPS = ["White", "Black or African American", "Hispanic", "Asian or Pacific Islander", "Null Baseline"]
+JOB_IDS = [0, 1, 2]
 
 logging.basicConfig(
     level=logging.INFO,
@@ -159,16 +158,20 @@ if __name__ == "__main__":
             output_path="llm_outputs.csv"
         )
 
-        logger.info(f"Scoring {len(prompt_list)} prompts via LLM...")
-
         per_group = 50
-        job_id = 0
-        results = score_with_retries(
-            client, prompt_list, per_group, job_id, max_retries=3
-        )
-        logger.info(f"Final balanced set: {len(results)} results")
+        all_results = []
+ 
+        for job_id in JOB_IDS:
+            logger.info(f"Scoring job_id={job_id} — {per_group} per group x {len(RACE_GROUPS)} groups = {per_group * len(RACE_GROUPS)} prompts")
+            job_results = score_with_retries(
+                client, prompt_list, per_group, job_id, max_retries=3
+            )
+            logger.info(f"job_id={job_id}: {len(job_results)} results collected")
+            all_results.extend(job_results)
+ 
+        logger.info(f"Final balanced set: {len(all_results)} results across {len(JOB_IDS)} jobs")
         persistence.reset_scores()
-        persistence.append_batch(results)
+        persistence.append_batch(all_results)
         logger.info(f"Saved results via DataPersistence to {persistence.output_path}")
 
     else:
