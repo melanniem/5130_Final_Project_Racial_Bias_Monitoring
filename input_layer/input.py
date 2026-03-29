@@ -75,7 +75,7 @@ def fix_dates(resume: dict) -> dict:
     return resume
 
 NAMES_CSV_PATH = "data/racial_markers.csv"
-RESUMES_JSONL = "data/master_resumes.jsonl"
+RESUMES_JSONL = "data/resume1.json"
 OUTPUT_PATH = "input_combinations.csv"
 NAMES_PER_GROUP = 57  # names per racial group (matches smallest group: Black = 57)
 RESUME_SAMPLE_SIZE = 50
@@ -122,9 +122,21 @@ def load_names(path=NAMES_CSV_PATH) -> pd.DataFrame:
 # Load Resumes
 def load_resumes(path):
     with open(path, 'r', encoding='utf-8') as f:
-        all_resumes = [json.loads(line) for line in f if line.strip()]
-    print(f"\nTotal resumes loaded: {len(all_resumes)}")
-    return all_resumes
+        content = f.read().strip()
+
+    # Try parsing as a single JSON object first
+    try:
+        data = json.loads(content)
+        if isinstance(data, list):
+            resume = data
+        else:
+            resume = [data]
+    except json.JSONDecodeError:
+        # Fall back to JSONL (one JSON object per line)
+        resume = [json.loads(line) for line in content.splitlines() if line.strip()]
+
+    print(f"\nResumes loaded from: {path} ({len(resume)} total)")
+    return resume
 
 
 def sample_names(names_df, names_per_group=NAMES_PER_GROUP):
@@ -138,11 +150,11 @@ def sample_names(names_df, names_per_group=NAMES_PER_GROUP):
     )
 
 
-def sample_resumes(all_resumes, sample_size=RESUME_SAMPLE_SIZE, seed=RANDOM_SEED):
-    print(f"Sampled: {len(all_resumes)} resumes")
-    random.seed(seed)
-    resumes_raw = random.sample(all_resumes, sample_size)
-    return resumes_raw
+# def sample_resumes(all_resumes, sample_size=RESUME_SAMPLE_SIZE, seed=RANDOM_SEED):
+#     print(f"Sampled: {len(all_resumes)} resumes")
+#     random.seed(seed)
+#     resumes_raw = random.sample(all_resumes, sample_size)
+#     return resumes_raw
 
 
 # Convert JSON resume into clean text
@@ -253,7 +265,7 @@ def format_resume(resume: dict, full_name: str) -> str:
                         duration_str = f"{years} yr {rem} mo"
                     else:
                         duration_str = f"{years} yr"
-                        lines.append(f"    Duration: {duration_str}")
+                    lines.append(f"    Duration: {duration_str}")
                 except:
                     pass
             achievements = edu.get("achievements", {})
@@ -478,7 +490,7 @@ print("\nJob descriptions loaded:", list(JOB_DESCRIPTIONS.keys()))
 
 
 # Combinations
-def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
+def build_combinations(resume, names_df, JOB_DESCRIPTIONS):
     # Interleave names so identity groups alternate
     groups = sorted(names_df['identity'].unique())
     min_size = names_df.groupby('identity').size().min()
@@ -493,23 +505,21 @@ def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
     input_records = []
     name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(JOB_DESCRIPTIONS.keys())}
-    for resume_idx, resume in enumerate(resumes):
-        for _, name_row in names_df.iterrows():
-            for job_title, job_desc in JOB_DESCRIPTIONS.items():
-                resume_text = format_resume(resume, name_row['name'])
-                input_records.append({
-                    "resume_id": resume_idx,
-                    "name_id": name_id_map[name_row['name']],
-                    "job_title_id": job_title_id_map[job_title],
-                    "name": name_row['name'],
-                    "first": name_row['first'],
-                    "last": name_row['last'],
-                    "identity": name_row['identity'],
-                    "mean_correct": name_row['mean.correct'],
-                    "job_title": job_title,
-                    "resume_text": resume_text,
-                    "job_description": job_desc
-                })
+    for _, name_row in names_df.iterrows():
+        for job_title, job_desc in JOB_DESCRIPTIONS.items():
+            resume_text = format_resume(resume, name_row['name'])
+            input_records.append({
+                "name_id": name_id_map[name_row['name']],
+                "job_title_id": job_title_id_map[job_title],
+                "name": name_row['name'],
+                "first": name_row['first'],
+                "last": name_row['last'],
+                "identity": name_row['identity'],
+                "mean_correct": name_row['mean.correct'],
+                "job_title": job_title,
+                "resume_text": resume_text,
+                "job_description": job_desc
+            })
     input_df = pd.DataFrame(input_records)
     print(f"\nTotal combinations: {len(input_df)}")
     print(f"  = {RESUME_SAMPLE_SIZE} resumes x {NAMES_PER_GROUP * 4} names x {len(JOB_DESCRIPTIONS)} jobs")
@@ -520,9 +530,8 @@ def build_combinations(resumes, names_df, JOB_DESCRIPTIONS):
     return input_df
 
 # Test Combinations Per Ethincity and Resume
-def build_test_combinations(resumes, names_df, job_descriptions,
-                            names_per_group=TEST_NAMES_PER_GROUP,
-                            resume_ids=TEST_RESUME_IDS):
+def build_test_combinations(resume, names_df, job_descriptions,
+                            names_per_group=TEST_NAMES_PER_GROUP):
     """
     A balanced test set with exactly 5 names per identity group
     for each job title (Software Engineer, Cybersecurity Analyst, Data Scientist).
@@ -550,63 +559,54 @@ def build_test_combinations(resumes, names_df, job_descriptions,
             interleaved.append(buckets[g].iloc[i])
     names_interleaved = pd.DataFrame(interleaved).reset_index(drop=True)
 
-    # Filter resumes to test resume_ids only
-    test_resumes = [resumes[i] for i in resume_ids if i < len(resumes)]
-    print(f"[Test Set] Using resume IDs: {resume_ids}")
-
     # Build combinations
     name_id_map = {name: idx for idx, name in enumerate(names_df['name'])}
     job_title_id_map = {job: idx for idx, job in enumerate(job_descriptions.keys())}
 
     test_records = []
-    for resume_idx, resume in zip(resume_ids, test_resumes):
-        for _, name_row in names_interleaved.iterrows():
-            for job_title, job_desc in job_descriptions.items():
-                try:
-                    resume_text = format_resume(resume, name_row['name'])
-                    if not resume_text:
-                        print(f"FAILED: resume_id={resume_idx}, job={job_title}, review format_resume() in input_layer.py")
-                        resume_text = ""
-                except Exception as e:
-                    if resume_idx == 0:
-                        import traceback
-                        traceback.print_exc()
+    for _, name_row in names_interleaved.iterrows():
+        for job_title, job_desc in job_descriptions.items():
+            try:
+                resume_text = format_resume(resume, name_row['name'])
+                if not resume_text:
+                    print(f"FAILED: job={job_title}, review format_resume() in input_layer.py")
                     resume_text = ""
-                test_records.append({
-                    "resume_id": resume_idx,
-                    "name_id": name_id_map.get(name_row['name'], -1),
-                    "job_title_id": job_title_id_map[job_title],
-                    "name": name_row['name'],
-                    "first": name_row['first'],
-                    "last": name_row['last'],
-                    "identity": name_row['identity'],
-                    "mean_correct": name_row['mean.correct'],
-                    "job_title": job_title,
-                    "resume_text": resume_text,
-                    "job_description": job_desc
-                })
+            except Exception as e:
+                import traceback
+                traceback.print_exc()
+                resume_text = ""
+            test_records.append({
+                "name_id": name_id_map.get(name_row['name'], -1),
+                "job_title_id": job_title_id_map[job_title],
+                "name": name_row['name'],
+                "first": name_row['first'],
+                "last": name_row['last'],
+                "identity": name_row['identity'],
+                "mean_correct": name_row['mean.correct'],
+                "job_title": job_title,
+                "resume_text": resume_text,
+                "job_description": job_desc
+            })
 
     test_df = pd.DataFrame(test_records)
 
     print(f"\n[Test Set] Total combinations: {len(test_df)}")
-    print(f"  = {len(resume_ids)} resumes x {names_per_group * len(groups)} names x {len(job_descriptions)} jobs")
+    print(f"  = 1 resume x {names_per_group * len(groups)} names x {len(job_descriptions)} jobs")
     print("\n[Test Set] By identity:")
     print(test_df['identity'].value_counts())
     print("\n[Test Set] By job title:")
     print(test_df['job_title'].value_counts())
-    print("\n[Test Set] By resume_id:")
-    print(test_df['resume_id'].value_counts())
 
     return test_df
 
 # Output
 def run_input_layer():
     names_df = load_names()
-    all_resumes = load_resumes(RESUMES_JSONL)
+    resume = load_resumes(RESUMES_JSONL)[0]
     names_sampled = sample_names(names_df, NAMES_PER_GROUP)
-    resumes = sample_resumes(all_resumes)
+    # resumes = sample_resumes(all_resumes)
 
-    input_df = build_combinations(resumes, names_sampled, JOB_DESCRIPTIONS)
+    input_df = build_combinations(resume, names_sampled, JOB_DESCRIPTIONS)
     input_df.to_csv(OUTPUT_PATH, index=False)
     print(f"\nSaved {len(input_df)} records to '{OUTPUT_PATH}'")
     return input_df
@@ -614,9 +614,9 @@ def run_input_layer():
 # Run Test Layer
 def run_test_input_layer():
     names_df = load_names()
-    all_resumes = load_resumes(RESUMES_JSONL)
+    resume = load_resumes(RESUMES_JSONL)[0]
 
-    test_df = build_test_combinations(all_resumes, names_df, JOB_DESCRIPTIONS)
+    test_df = build_test_combinations(resume, names_df, JOB_DESCRIPTIONS)
 
     output_path = "input_combinations.csv"
     test_df.to_csv(output_path, index=False)

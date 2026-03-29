@@ -5,12 +5,11 @@
     "phone": "+91-9876543210",
     "linkedin": "linkedin.com/in/devsharma",
     "github": "github.com/devsharma",
-    "location": {"city": "Pune", "country": "India", "remote_preference": "hybrid"},
     "summary": "Full-stack Software Engineer with 4 years of experience building scalable systems, REST APIs, and data pipelines. Proficient in Python, Java, and cloud infrastructure."
   },
   "experience": [
     {
-      "company": "Infosys Ltd",
+      "company": "Infosys Ltd.",
       "company_info": {"industry": "IT Services", "size": "Large"},
       "title": "Software Engineer",
       "level": "mid",
@@ -55,16 +54,14 @@
   ],
   "education": [
     {
-      "degree": {"level": "B.E.", "field": "Computer Engineering", "major": "Software Systems"},
+      "degree": {"level": "B.S.", "field": "Electrical and Computer Engineering", "major": "Computer Engineering"},
       "institution": {
-        "name": "Savitribai Phule Pune University",
-        "location": "Pune, Maharashtra, India",
-        "accreditation": "NAAC A+"
+        "name": "Northeastern University",
+        "location": "Boston, MA, USA"
       },
       "dates": {"start": "2014-08", "expected_graduation": "2018-06"},
       "achievements": {
-        "gpa": 8.4,
-        "honors": "First Class with Distinction",
+        "gpa": 3.5,
         "relevant_coursework": ["Data Structures", "Operating Systems", "Database Management", "Computer Networks", "Software Engineering"]
       }
     }
@@ -98,9 +95,7 @@
       ]
     },
     "languages": [
-      {"name": "English", "level": "fluent"},
-      {"name": "Hindi", "level": "native"},
-      {"name": "Marathi", "level": "native"}
+      {"name": "English", "level": "fluent"}
     ],
     "other": [
       {"name": "Technical Documentation"},
@@ -144,16 +139,15 @@
     }
   ],
   "achievements": [
-    "Awarded 'Best New Engineer' at Infosys internal hackathon 2021, Pune.",
+    "Awarded 'Best New Engineer' at Infosys internal hackathon 2021.",
     "Published a tech blog post on Django REST Framework optimization with 4,000+ views.",
-    "Led the college team to runner-up position at Smart India Hackathon 2018."
+    "Led the college team to runner-up position at Smart Hackathon 2018."
   ],
   "publications": [
     {
       "title": "Efficient API Rate Limiting Strategies in Django",
-      "conference": "PyCon India 2022",
-      "date": "2022-09",
-      "location": "Hyderabad, India"
+      "conference": "PyCon 2022",
+      "date": "2022-09"
     }
   ],
   "workshops": [
@@ -162,12 +156,11 @@
       "issuer": "Amazon Web Services",
       "date": "2022-03",
       "duration": "3 days",
-      "location": "Pune, India",
       "description": "Completed hands-on workshop covering EC2, S3, Lambda, and RDS deployment patterns."
     },
     {
       "name": "Docker and Kubernetes for Developers",
-      "issuer": "CNCF India",
+      "issuer": "CNCF",
       "date": "2021-11",
       "duration": "2 days",
       "location": "Online",
