@@ -61,7 +61,8 @@ class BiasQuantification:
         """
         return self.scores[self.groups == group]
     
-    def combine_outputs(output_dir):
+    def combine_outputs(self):
+        output_dir = self.output_dir
         files = ['descriptive_stats.csv', 'welch_tests.csv', 'cohens_d.csv', 'disparity_ratios.csv']
         
         dfs = [pd.read_csv(os.path.join(output_dir, f)) for f in files]

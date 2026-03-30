@@ -2,7 +2,23 @@ from ollama import chat
 import json
 import time
 from datetime import datetime
+from data_persistence import data_persistence
+from pathlib import Path
+import logging
+import sys
 
+RESULTS_PATH = Path("results")
+Path("./logs").mkdir(exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("./logs/running.log", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 class OllamaQwen:
     def __init__(self, model="qwen2.5:7b", temperature=0):
@@ -52,12 +68,17 @@ class OllamaQwen:
                         "raw_response": str(e),
                         "timestamp": datetime.now().isoformat(),
                     }
-                time.sleep(2)
+                time.sleep(0.2)
 
-    def score_batch(self, prompt_list):
+    def score_batch(self, prompt_list, save_every=1):
+        persistence = data_persistence.DataPersistence(
+            DATA_PATH=RESULTS_PATH,
+            input_path="prompts_output.csv",
+            output_path="llm_outputs.csv"
+        )
         results = []
-        for item in prompt_list:
-            #print(f"Running prompt {item}/{len(prompt_list)}")
+        batch = []
+        for n, item in enumerate(prompt_list):
             result = self.score_resume(
                 prompt=item["prompt"],
                 race_group=item["race_group"],
@@ -65,6 +86,17 @@ class OllamaQwen:
                 job_title_id=item.get("job_title_id"),
             )
             results.append(result)
-            time.sleep(0.2)
+            if result["score"] is not None:
+                batch.append(result)
 
+            if len(batch) >= save_every:
+                persistence.append_batch(batch)
+                logger.info(f"Scored {n + 1}/{len(prompt_list)}")
+                batch = []  # clear after saving
+
+            time.sleep(0.002)
+
+        # save any remaining results
+        if batch:
+            persistence.append_batch(batch)
         return results

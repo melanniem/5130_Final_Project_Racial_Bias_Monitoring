@@ -26,6 +26,9 @@ class DataPersistence:
 
         if os.path.exists(self.output_path):
             self.df = pd.read_csv(self.output_path)
+            for col in ["model", "rationale", "raw_response"]:
+                self.df[col] = self.df[col].astype(object)
+            self.df["timestamp"] = pd.to_datetime(self.df["timestamp"], errors="coerce")
             logger.info(f"Loaded existing file llm_outputs from {self.output_path} ({len(self.df)} rows)")
         elif os.path.exists(self.input_path):
             self.df = pd.read_csv(self.input_path)
@@ -44,7 +47,7 @@ class DataPersistence:
             ])
             logger.info("No input file found, creating new file llm_outputs")
 
-    def append_result(self, result: dict, save_every: int = 20):
+    def append_result(self, result: dict):
         """
         Appends result to llm_outputs dataframe
         :param result:
@@ -55,14 +58,16 @@ class DataPersistence:
         race_group = result.get("race_group")
 
         match = self.df[
-            (self.df["name_id"] == name_id)
-            & (self.df["job_title_id"] == job_title_id)
+            (self.df["name_id"].astype(str) == str(name_id))
+            & (self.df["job_title_id"].astype(str) == str(job_title_id))
             & (self.df["race_group"] == race_group)
             ]
 
         if match.empty:
-            logger.warning(
-                f"No matching row found for name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
+            logger.warning(f"No matching row found, inserting new row for name_id={name_id}")
+            new_row = {col: None for col in self.df.columns}
+            new_row.update(result)
+            self.df = pd.concat([self.df, pd.DataFrame([new_row])], ignore_index=True)
             return
 
         try:
@@ -72,9 +77,6 @@ class DataPersistence:
             self.df.at[idx, "timestamp"] = result.get("timestamp", datetime.now())
 
             self._append_count += 1
-            if self._append_count % save_every == 0:
-                self.save()
-                logger.info(f"Auto saved at {len(self.df)} rows")
             logger.info(
                 f"Updated row for name_id={name_id}, job_title_id={job_title_id}, race_group={race_group}")
 
