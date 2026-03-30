@@ -15,6 +15,7 @@ LOG_DIR = Path("logs")
 LOG_DIR.mkdir(exist_ok=True)
 RACE_GROUPS = ["White", "Black or African American", "Hispanic", "Asian or Pacific Islander", "Null Baseline"]
 JOB_IDS = [0, 1, 2]
+BATCH_SIZE = 60
 
 logging.basicConfig(
     level=logging.INFO,
@@ -41,7 +42,7 @@ if __name__ == "__main__":
         logger.info(f"Generated {len(resume_df)} resume dataframe")
 
         # Prompt Standardization Layer
-        prompt_df = prompt_standardization.run_prompt_layer()
+        prompt_df = prompt_standardization.run_prompt_layer(n_baseline=BATCH_SIZE//4) # Divide by four so that we only run baseline for number of one racial group
         prompt_df = prompt_df.rename(columns={"identity": "race_group"})
         prompt_df.to_csv(RESULTS_PATH / "prompts_output.csv", index=False)
         print(prompt_df.head())
@@ -60,7 +61,7 @@ if __name__ == "__main__":
         }, axis=1).tolist()
 
 
-        results = client.score_batch(prompt_list[:5])
+        results = client.score_batch(prompt_list[:BATCH_SIZE])
         logger.info(f"Scoring complete. {sum(1 for r in results if r['score'] is not None)} succeeded, "
                     f"{sum(1 for r in results if r['score'] is None)} failed.")
 

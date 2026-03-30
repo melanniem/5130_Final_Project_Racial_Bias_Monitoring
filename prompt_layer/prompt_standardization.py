@@ -38,13 +38,12 @@ def load_and_built_prompt():
     return input_df
 
 # Build null name baseline prompts
-def build_null_baseline_prompts(input_df: pd.DataFrame) -> pd.DataFrame:
+def build_null_baseline_prompts(input_df: pd.DataFrame, n: int = 5) -> pd.DataFrame:
     """
-    Take one entry per resume+job combination and strip the name
-    from resume_text to create a null baseline condition.
+    Take n sampled entries and strip the name from resume_text to create
+    a null baseline condition. n should match the batch size used in scoring.
     """
-    # One row per unique resume+job — no need for multiple name variants
-    baseline_df = input_df.drop_duplicates(subset=['job_title_id']).copy()
+    baseline_df = input_df.head(n).copy()
  
     # Strip the name from resume_text using the existing name field
     baseline_df['resume_text'] = baseline_df.apply(
@@ -63,9 +62,7 @@ def build_null_baseline_prompts(input_df: pd.DataFrame) -> pd.DataFrame:
     baseline_df['first']        = 'Applicant'
     baseline_df['last']         = ''
     baseline_df['mean_correct'] = None  # not meaningful without a racially associated name
-    baseline_df['name_id']      = baseline_df.apply(
-        lambda row: f"null_{row['job_title_id']}", axis = 1
-    )
+    baseline_df['name_id']      = [f"null_{i}" for i in range(len(baseline_df))]
  
     return baseline_df
 
@@ -92,12 +89,12 @@ def verify_prompt(input_df):
     return all_pass
 
 # Output
-def run_prompt_layer():
+def run_prompt_layer(n_baseline: int = 5):
     input_df = load_and_built_prompt()
     verify_prompt(input_df)
 
     # Generate and append null baseline rows
-    baseline_df = build_null_baseline_prompts(input_df)
+    baseline_df = build_null_baseline_prompts(input_df, n=n_baseline)
     input_df = pd.concat([input_df, baseline_df], ignore_index=True)
     print(f"Appended {len(baseline_df)} null baseline prompts.")
 
