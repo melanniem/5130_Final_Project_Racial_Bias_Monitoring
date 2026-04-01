@@ -61,7 +61,18 @@ if __name__ == "__main__":
         }, axis=1).tolist()
 
 
-        results = client.score_batch(prompt_list[:BATCH_SIZE])
+        # results = client.score_batch(prompt_list[:BATCH_SIZE])
+        from collections import defaultdict
+        n_per_group = BATCH_SIZE // len(RACE_GROUPS)  # 60 // 5 = 12
+        grouped = defaultdict(list)
+        for item in prompt_list:
+            grouped[item["race_group"]].append(item)
+
+        balanced_list = []
+        for group in RACE_GROUPS:
+            balanced_list.extend(grouped[group][:n_per_group])
+
+        results = client.score_batch(balanced_list)
         logger.info(f"Scoring complete. {sum(1 for r in results if r['score'] is not None)} succeeded, "
                     f"{sum(1 for r in results if r['score'] is None)} failed.")
 

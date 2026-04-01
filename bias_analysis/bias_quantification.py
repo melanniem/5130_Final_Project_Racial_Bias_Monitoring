@@ -348,7 +348,7 @@ class BiasQuantification:
         print(pmi_df.head(20).to_string(index=False))
  
         # Graph: Top 10 terms per group
-        fig, axes = plt.subplots(2, 2, figsize=(14, 10))
+        fig, axes = plt.subplots(2, 3, figsize=(14, 10))
         for i, g in enumerate(self.unique_groups):
             ax = axes.flatten()[i]
             group_pmi = pmi_df[pmi_df["group"] == g].head(10)
