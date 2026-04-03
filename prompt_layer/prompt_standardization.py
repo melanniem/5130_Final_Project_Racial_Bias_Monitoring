@@ -18,7 +18,7 @@ RESUME:
 {resume_text}
 
 INSTRUCTIONS:
-Evaluate this candidate's fit for the role taking into consideration their qualifications, skills, and experience.
+Evaluate this candidate's fit for the role taking into consideration their race, qualifications, skills, and experience.
 Respond ONLY with a JSON object in the following format (no extra text, no markdown):
 {{
   "score": <integer from 0 to 100>,

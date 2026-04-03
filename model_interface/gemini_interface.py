@@ -2,6 +2,23 @@ from google import generativeai as genai
 import json
 import time
 from datetime import datetime
+from data_persistence import data_persistence
+from pathlib import Path
+import logging
+import sys
+
+RESULTS_PATH = Path("results")
+Path("./logs").mkdir(exist_ok=True)
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.FileHandler("./logs/running.log", encoding="utf-8"),
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+logger = logging.getLogger(__name__)
 
 class Gemini:
     def __init__(self, api_key, model="models/gemini-2.5-flash", temperature=0):
@@ -18,59 +35,69 @@ class Gemini:
         )
         return response.text.strip()
 
-
-    #Retry Logic to handle a failed API call
+    # Retry Logic to handle a failed API call
     def score_resume(self, prompt, resume_id=None, race_group=None, name_id=None, job_title_id=None, retries=3):
         for attempt in range(retries):
             try:
                 text = self.call_model(prompt)
-                #gemini return model wrapped in '''json
+                # Strip markdown json fences if present
                 text = text.replace("```json", "").replace("```", "").strip()
                 parsed = json.loads(text)
 
                 return {
-                    "resume_id":resume_id,
-                    "race_group":race_group,
+                    "resume_id": resume_id,
+                    "race_group": race_group,
                     "name_id": name_id,
                     "job_title_id": job_title_id,
-                    "model": self.model.model_name,
-                    "temperature":self.temperature,
+                    "model": self.model,
+                    "temperature": self.temperature,
                     "score": parsed.get("score"),
                     "rationale": parsed.get("rationale"),
                     "raw_response": parsed.get("raw_response"),
-                    "timestamp": datetime.now().isoformat()
+                    "timestamp": datetime.now().isoformat(),
                 }
             except Exception as e:
                 if attempt == retries - 1:
                     return {
-                        "resume_id": resume_id,
                         "race_group": race_group,
                         "name_id": name_id,
                         "job_title_id": job_title_id,
-                        "model": self.model.model_name,
+                        "model": self.model,
                         "temperature": self.temperature,
                         "score": None,
                         "rationale": None,
                         "raw_response": str(e),
-                        "timestamp": datetime.now().isoformat()
+                        "timestamp": datetime.now().isoformat(),
                     }
-                time.sleep(2)
+                time.sleep(0.2)
 
-
-
-    def score_batch(self, prompt_list):
+    def score_batch(self, prompt_list, save_every=1):
+        persistence = data_persistence.DataPersistence(
+            DATA_PATH=RESULTS_PATH,
+            input_path="prompts_output.csv",
+            output_path="llm_outputs.csv"
+        )
         results = []
-        for item in prompt_list:
+        batch = []
+        for n, item in enumerate(prompt_list):
             result = self.score_resume(
                 prompt=item["prompt"],
-                resume_id=item["resume_id"],
                 race_group=item["race_group"],
                 name_id=item.get("name_id"),
-                job_title_id=item.get("job_title_id")
+                job_title_id=item.get("job_title_id"),
             )
-
             results.append(result)
-            #gemini can rate limit batch runs
-            time.sleep(0.5)
+            if result["score"] is not None:
+                batch.append(result)
 
+            if len(batch) >= save_every:
+                persistence.append_batch(batch)
+                logger.info(f"Scored {n + 1}/{len(prompt_list)}")
+                batch = []  # clear after saving
+
+            time.sleep(0.002)
+
+        # save any remaining results
+        if batch:
+            persistence.append_batch(batch)
         return results
