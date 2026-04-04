@@ -56,6 +56,8 @@ class OllamaQwen:
                     "timestamp": datetime.now().isoformat(),
                 }
             except Exception as e:
+                error_str = str(e).lower()
+                is_rate_limit = "429" in error_str or "too many requests" in error_str or "resource exhausted" in error_str
                 if attempt == retries - 1:
                     return {
                         "race_group": race_group,
@@ -68,7 +70,13 @@ class OllamaQwen:
                         "raw_response": str(e),
                         "timestamp": datetime.now().isoformat(),
                     }
-                time.sleep(0.2)
+                if is_rate_limit:
+                    wait = 2 ** attempt + random.uniform(0, 1)
+                    logger.warning(f"Rate limited. Attempt {attempt + 1}/{retries}. Waiting {wait:.1f}s...")
+                else:
+                    wait = 1
+                    logger.warning(f"Attempt {attempt + 1}/{retries} failed for name_id={name_id}: {e}")
+                time.sleep(wait)
 
     def score_batch(self, prompt_list, save_every=1):
         persistence = data_persistence.DataPersistence(
