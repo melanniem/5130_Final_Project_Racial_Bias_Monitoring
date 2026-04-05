@@ -273,7 +273,7 @@ Tests are organized to match the five-layer pipeline structure and cover both in
 
 ### Unit Tests
 
-Each layer has a corresponding unit test module in `tests/unit/`:
+Each layer has a corresponding unit test module in `tests/`:
 
 | Module                        | What it tests                                                                                   |
 |-------------------------------|-------------------------------------------------------------------------------------------------|

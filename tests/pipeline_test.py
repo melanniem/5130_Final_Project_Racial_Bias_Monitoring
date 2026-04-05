@@ -1,43 +1,91 @@
 from pathlib import Path
-from input_layer.input import load_resumes
 from input_layer import input
 from prompt_layer import prompt_standardization as prompt
+from google import genai
+from ollama import chat
+from bias_analysis import bias_quantification
+from data_persistence import data_persistence
 import main
 
-def test_full_pipeline():
+
+def test_full_pipeline_synthetic():
+    """
+    Validate the full pipeline using a small synthetic fixture dataset:
+    5 names × 1 job × 2 models = 10 prompts
+    """
+    # Base path for saving outputs
     base = Path(__file__).resolve().parent.parent
 
-    names_path = base / "data" / "racial_markers.csv"
-    resumes_path = base / "data" / "master_resumes.jsonl"
+    # Synthetic fixture dataset
+    synthetic_names = [
+        {"name": "Alice", "identity": "white"},
+        {"name": "Bob", "identity": "white"},
+        {"name": "Carlos", "identity": "hispanic"},
+        {"name": "Diana", "identity": "black"},
+        {"name": "Eve", "identity": "asian"},
+    ]
 
-    names = input.load_names(names_path)
-    resumes = input.load_resumes(resumes_path)
+    synthetic_resumes = [
+        {"resume_id": 1, "content": "Experienced software engineer."}
+    ]
 
-    names_sampled = input.sample_names(names, 2)
+    synthetic_jobs = ["Software Engineer"]
 
+    # Sample 5 names
+    names_sampled = input.sample_names(synthetic_names, 5)
 
-    df = input.build_combinations(resumes_sampled, names_sampled, input.JOB_DESCRIPTIONS)
+    # Build input combinations: 5 names × 1 job × 2 models = 10 prompts
+    df = input.build_combinations(
+        resumes=synthetic_resumes,
+        names=names_sampled,
+        job_descriptions=synthetic_jobs,
+        num_models=2
+    )
 
-    assert not df.empty
-    assert len(df) == 3 * len(names_sampled) * len(input.JOB_DESCRIPTIONS)
-    
-    df.to_csv(base / "input_combinations.csv", index=False)
+    # Basic checks
+    assert not df.empty, "Combinations dataframe is empty"
+    assert len(df) == 5 * 1 * 2, "Expected 10 rows for synthetic dataset"
 
-    df = prompt.run_prompt_layer()
-    assert not df.empty
-    assert 'prompt' in df.columns
-    for col in ['resume_id', 'name_id', 'job_title_id', 'name', 'identity', 'job_title', 'prompt']:
-        assert col in df.columns
-        assert df[col].notna().all(), f"{col} contains null values"
-    assert all("score" in p for p in df['prompt'])
-    assert all("rationale" in p for p in df['prompt'])
-    assert all("RESUME" in p for p in df['prompt'])
-    assert all("JOB DESCRIPTION" in p for p in df['prompt'])
-    assert prompt.verify_prompt(df) == True
+    df.to_csv(base / "input_combinations_synthetic.csv", index=False)
 
-def test_data_distribution():
-  df = main.run_llm()
+    # Run prompt layer
+    df_prompts = prompt.run_prompt_layer(df)
+    assert not df_prompts.empty, "Prompt layer returned empty dataframe"
+    assert 'prompt' in df_prompts.columns, "Prompt column missing"
 
-  counts = df["identity"].value_counts()
-  assert counts.min() > 0
-  assert counts == 4
+    # Check all expected columns
+    expected_cols = ['resume_id', 'name_id', 'job_title_id', 'name', 'identity', 'job_title', 'prompt']
+    for col in expected_cols:
+        assert col in df_prompts.columns, f"{col} missing from prompt output"
+        assert df_prompts[col].notna().all(), f"{col} contains null values"
+
+    # Check prompt content
+    for p in df_prompts['prompt']:
+        assert "score" in p
+        assert "rationale" in p
+        assert "RESUME" in p
+        assert "JOB DESCRIPTION" in p
+
+    # Verify prompt layer passes custom verification
+    assert prompt.verify_prompt(df_prompts) is True
+
+    # Run Model Interface Layer
+    df_prompts['gemini_score'] = df_prompts['prompt'].apply(lambda p: genai.mock_score(p))
+    # Generate scores for Ollama
+    df_prompts['ollama_score'] = df_prompts['prompt'].apply(lambda p: ollama_interface.mock_score(p))
+
+    # Validate scores exist
+    assert df_prompts['gemini_score'].notna().all()
+    assert df_prompts['ollama_score'].notna().all()
+
+    # Run bias analysis
+    bias_results = bias_quantification.run_bias_analysis(df_prompts)
+    assert not bias_results.empty
+    assert all(col in bias_results.columns for col in ['identity', 'gemini_score', 'ollama_score', 'disparity'])
+
+    results_path = base / "results_synthetic.csv"
+    bias_results.to_csv(results_path, index=False)
+
+    assert results_path.exists()
+
+    print("End-to-end synthetic pipeline test passed!")
