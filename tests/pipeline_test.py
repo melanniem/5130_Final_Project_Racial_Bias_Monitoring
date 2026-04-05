@@ -14,7 +14,6 @@ def test_full_pipeline():
     resumes = input.load_resumes(resumes_path)
 
     names_sampled = input.sample_names(names, 2)
-    resumes_sampled = input.sample_resumes(resumes, 3, seed=42)
 
 
     df = input.build_combinations(resumes_sampled, names_sampled, input.JOB_DESCRIPTIONS)
@@ -37,7 +36,7 @@ def test_full_pipeline():
     assert prompt.verify_prompt(df) == True
 
 def test_data_distribution():
-  df = main.run_pipeline()
+  df = main.run_llm()
 
   counts = df["identity"].value_counts()
   assert counts.min() > 0

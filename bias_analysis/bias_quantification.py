@@ -325,6 +325,9 @@ class BiasQuantification:
  
         for doc, group in zip(rationales, group_list): # Loops through every rationale and corresponding group at the same time
             for term in set(str(doc).lower().split()): # Standardizes terms and counts word appearance per group and overall
+                # Skip filler words and names
+                if term in skip_terms:
+                    continue
                 term_group_counts[(term, group)] += 1
                 term_counts[term] += 1
  
