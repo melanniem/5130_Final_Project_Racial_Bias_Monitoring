@@ -72,7 +72,7 @@ def test_full_pipeline_synthetic():
     # Run Model Interface Layer
     df_prompts['gemini_score'] = df_prompts['prompt'].apply(lambda p: genai.mock_score(p))
     # Generate scores for Ollama
-    df_prompts['ollama_score'] = df_prompts['prompt'].apply(lambda p: ollama_interface.mock_score(p))
+    df_prompts['ollama_score'] = df_prompts['prompt'].apply(lambda p: ollama.chat.mock_score(p))
 
     # Validate scores exist
     assert df_prompts['gemini_score'].notna().all()
