@@ -17,49 +17,35 @@ The pipeline is designed as a **five-layer modular system**:
 
 ```
 Racial_Bias_Monitering/
-├── EDA.ipynb
 ├── README.md
-├── __init__.py
+├── environment.yml
+├── pyproject.toml
+├── requirements.txt
+├── .gitignore
+├── gemini_main.py
+├── ollama_main.py
 ├── bias_analysis/
 │   └── bias_quantification.py
+│   └── __init__.py
 ├── data/
 │   ├── master_resumes.jsonl
 │   ├── racial_markers.csv
 │   └── resume1.json
 ├── data_persistence/
 │   └── data_persistence.py
-├── gemini_main.py
-├── input_combinations.csv
+│   └── __init__.py
 ├── input_layer/
 │   └── input.py
-├── logs/
-│   ├── pipeline.log
-│   └── running.log
-├── main.py
+│   └── __init__.py
 ├── model_interface/
 │   ├── gemini_interface.py
 │   └── ollama_interface.py
+│   └── __init__.py
 ├── power_analysis.py
 ├── prompt_layer/
 │   └── prompt_standardization.py
-├── prompts_output.csv
-├── requirements.txt
+│   └── __init__.py
 ├── results/
-│   ├── cohens_d.csv
-│   ├── cohens_d.png
-│   ├── descriptive_stats.csv
-│   ├── disparity_ratios.csv
-│   ├── disparity_ratios.png
-│   ├── embedding_pca.png
-│   ├── embedding_similarity.png
-│   ├── full_results.csv
-│   ├── llm_outputs.csv
-│   ├── pmi_proxy_markers.csv
-│   ├── pmi_proxy_markers.png
-│   ├── prompts_output.csv
-│   ├── score_distributions.png
-│   ├── welch_pvalues.png
-│   └── welch_tests.csv
 └── tests/
     ├── __init__.py
     ├── bias_quantification_test.py
