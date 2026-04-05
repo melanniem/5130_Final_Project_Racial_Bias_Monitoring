@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llm-resume-bias-audit"
+version = "0.1.0"
+description = "Audit racial bias in LLM-based automated resume screening"
+requires-python = ">=3.10"
+dependencies = [
+    "pandas",
+    "numpy",
+    "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "scipy",
+    "google-genai",
+    "google-generativeai",
+    "python-dotenv",
+    "ollama",
+    "faker",
+    "python-dateutil",
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-anyio"]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = [
+    "input_layer*",
+    "prompt_layer*",
+    "model_interface*",
+    "data_persistence*",
+    "bias_analysis*",
+]
