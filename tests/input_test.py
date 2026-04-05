@@ -17,7 +17,7 @@ from input_layer.input import (
 )
 
 """
-Unit tests for input.py
+Unit tests for input.py (Input Layer)
 
 Covers functions: fix_dates, format_resume, sample_names, build_combinations, load_resumes
 All tests use inline fixtures (no real data required)
@@ -41,7 +41,6 @@ def make_names_df(n_per_group=3):
                 "mean.correct": round(0.5 + j * 0.1, 2),
             })
     return pd.DataFrame(rows)
-
 
 def make_minimal_resume():
     """
