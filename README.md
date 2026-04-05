@@ -20,7 +20,6 @@ Racial_Bias_Monitering/
 ├── README.md
 ├── environment.yml
 ├── pyproject.toml
-├── requirements.txt
 ├── .gitignore
 ├── gemini_main.py
 ├── ollama_main.py
