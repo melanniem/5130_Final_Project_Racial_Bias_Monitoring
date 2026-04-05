@@ -1,11 +1,16 @@
+import tempfile
+import pandas as pd
 from pathlib import Path
+from unittest.mock import patch
+
 from input_layer import input
 from prompt_layer import prompt_standardization as prompt
-from google import genai
-from ollama import chat
-from bias_analysis import bias_quantification
+from model_interface.gemini_interface import Gemini
+from model_interface.ollama_interface import OllamaQwen
+from bias_analysis.bias_quantification import BiasQuantification
 from data_persistence import data_persistence
-import ollama_main
+
+MOCK_RESPONSE = '{"score": 75, "rationale": "Strong candidate with relevant experience."}'
 
 
 def test_full_pipeline_synthetic():
@@ -69,23 +74,59 @@ def test_full_pipeline_synthetic():
     # Verify prompt layer passes custom verification
     assert prompt.verify_prompt(df_prompts) is True
 
-    # Run Model Interface Layer
-    df_prompts['gemini_score'] = df_prompts['prompt'].apply(lambda p: genai.mock_score(p))
-    # Generate scores for Ollama
-    df_prompts['ollama_score'] = df_prompts['prompt'].apply(lambda p: ollama.chat.mock_score(p))
+    # Run Model Interface Layer — mock call_model so no real API calls are made
+    with patch.object(Gemini, 'call_model', return_value=MOCK_RESPONSE), \
+         patch.object(OllamaQwen, 'call_model', return_value=MOCK_RESPONSE):
+
+        gemini = Gemini(api_key="mock_key")
+        ollama_model = OllamaQwen()
+
+        df_prompts['gemini_score'] = df_prompts.apply(
+            lambda row: gemini.score_resume(
+                row['prompt'],
+                resume_id=row.get('resume_id'),
+                race_group=row.get('identity'),
+                name_id=row.get('name_id'),
+                job_title_id=row.get('job_title_id'),
+            ).get('score'), axis=1
+        )
+        df_prompts['ollama_score'] = df_prompts.apply(
+            lambda row: ollama_model.score_resume(
+                row['prompt'],
+                resume_id=row.get('resume_id'),
+                race_group=row.get('identity'),
+                name_id=row.get('name_id'),
+                job_title_id=row.get('job_title_id'),
+            ).get('score'), axis=1
+        )
 
     # Validate scores exist
     assert df_prompts['gemini_score'].notna().all()
     assert df_prompts['ollama_score'].notna().all()
 
-    # Run bias analysis
-    bias_results = bias_quantification.run_bias_analysis(df_prompts)
-    assert not bias_results.empty
-    assert all(col in bias_results.columns for col in ['identity', 'gemini_score', 'ollama_score', 'disparity'])
+    # Build combined output in BiasQuantification format and run bias analysis
+    combined = pd.concat([
+        df_prompts[['resume_id', 'name_id', 'job_title_id', 'identity']].assign(
+            score=df_prompts['gemini_score'], model='gemini'
+        ),
+        df_prompts[['resume_id', 'name_id', 'job_title_id', 'identity']].assign(
+            score=df_prompts['ollama_score'], model='ollama'
+        ),
+    ]).rename(columns={'identity': 'race_group'})
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        combined.to_csv(Path(tmpdir) / "llm_outputs.csv", index=False)
+        bq = BiasQuantification(
+            data_path=tmpdir,
+            input_file="llm_outputs.csv",
+            output_dir=str(Path(tmpdir) / "results"),
+        )
+        bias_results = bq.mean_score_difference()
+        assert bias_results is not None
+        assert not bias_results.empty
 
     results_path = base / "results_synthetic.csv"
-    bias_results.to_csv(results_path, index=False)
-
+    combined.to_csv(results_path, index=False)
     assert results_path.exists()
 
     print("End-to-end synthetic pipeline test passed!")
