@@ -20,6 +20,8 @@ dependencies = [
     "ollama",
     "faker",
     "python-dateutil",
+    "streamlit",
+    "plotly",
 ]
 
 [project.optional-dependencies]

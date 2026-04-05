@@ -10,6 +10,8 @@ from dotenv import load_dotenv
 import os
 import json
 import random
+import subprocess
+import sys
 from collections import defaultdict
 
 INPUT_PATH = "input_combinations.csv"
@@ -89,3 +91,7 @@ if __name__ == "__main__":
     )
     quantifier.run_bias_quantification_layer()
     logger.info("Bias quantification complete.")
+
+    # Launch dashboard
+    logger.info("Launching dashboard...")
+    subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard.py"])

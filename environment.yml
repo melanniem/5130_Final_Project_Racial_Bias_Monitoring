@@ -18,4 +18,6 @@ dependencies:
     - google-generativeai
     - python-dotenv
     - ollama
+    - streamlit
+    - plotly
     - -e .

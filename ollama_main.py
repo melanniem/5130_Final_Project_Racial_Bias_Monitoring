@@ -9,6 +9,8 @@ from pathlib import Path
 import os
 import json
 import random
+import subprocess
+import sys
 
 INPUT_PATH = "input_combinations.csv"
 LOG_DIR = Path("logs")
@@ -86,3 +88,7 @@ if __name__ == "__main__":
     )
     quantifier.run_bias_quantification_layer()
     logger.info("Bias quantification complete.")
+
+    # Launch dashboard
+    logger.info("Launching dashboard...")
+    subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard.py"])
