@@ -9,3 +9,4 @@ logs/
 *.pyc
 results
 .idea
+.pytest_cache
