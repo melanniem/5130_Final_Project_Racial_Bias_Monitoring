@@ -1,4 +1,5 @@
 .env
+*.egg-info/
 .vscode
 input_combinations.csv
 prompts_output.csv
