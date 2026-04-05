@@ -20,16 +20,16 @@ The baseline experimental design generates:
 
 ## Technical Stack
 
-| Component | Technology |
-|---|---|
-| Language | Python 3.10+ |
-| Data manipulation | pandas |
-| LLM API | Ollama (`qwen2.5:7b`) & Ollama (...) |
-| Resume dataset | resume1.jsonl (single resume) |
-| Name dataset | Crabtree et al. (2023) validated racial name dataset |
-| Statistical analysis | scipy, numpy |
-| Embeddings | sklearn (TF-IDF, PCA) |
-| Output format | CSV |
+| Component | Technology                                            |
+|---|-------------------------------------------------------|
+| Language | Python 3.10+                                          |
+| Data manipulation | pandas                                                |
+| LLM API | Ollama (`qwen2.5:7b`) & Google Gemini ('gemini-2.5') |
+| Resume dataset | resume1.jsonl (single resume)                         |
+| Name dataset | Crabtree et al. (2023) validated racial name dataset  |
+| Statistical analysis | scipy, numpy                                          |
+| Embeddings | sklearn (TF-IDF, PCA)                                 |
+| Output format | CSV                                                   |
 
 ---
 
@@ -120,11 +120,13 @@ Consistency check failures are flagged with the specific resume_id and job_title
 Sends each standardized prompt to the local Ollama model and returns a structured response containing a numeric score and rationale.
 
 **Tech Stack:**
-| Component | Technology |
-|---|---|
-| Local LLM | Ollama (`qwen2.5:7b`) |
-| Response parsing | `json` |
-| Retry delay | `time`, `datetime` |
+
+| Component        | Technology                                    |
+|------------------|-----------------------------------------------|
+| Local LLM        | Ollama (`qwen2.5:7b`)                         |
+| Cloud LLM        | Gemini(`gemini-2.5` via google-generativeai ) |
+| Response parsing | `json`                                        |
+| Retry delay      | `time`, `datetime`                            |
 
 **Input:** Prompt strings from `prompts_output.csv`
 
@@ -141,6 +143,7 @@ API call failures are retried automatically, unresolvable errors return a null s
 Stores all model outputs alongside their metadata into a structured CSV file, supporting incremental saving and crash recovery.
 
 **Tech Stack:**
+
 | Component | Technology |
 |---|---|
 | Data processing | `pandas` |
@@ -151,6 +154,7 @@ Stores all model outputs alongside their metadata into a structured CSV file, su
 **Input:** Scored results from Layer 3
 
 **Output:** `llm_outputs.csv`
+
 | Column | Description |
 |---|---|
 | `resume_id` | Resume index |
@@ -175,6 +179,7 @@ Unmatched or failed record updates are logged as warnings without interrupting t
 Analyzes collected scores and rationales using statistical tests and text-based methods to detect and quantify racial bias. Includes a power analysis to determine the minimum sample size required to detect a statistically meaningful effect.
 
 **Tech Stack:**
+
 | Component | Technology |
 |---|---|
 | Statistical tests | `scipy.stats` |
@@ -201,7 +206,40 @@ Analyzes collected scores and rationales using statistical tests and text-based 
 **Error Handling:**
 Each analysis method checks for sufficient data before running and skips if the minimum requirements are not met.
 
+
+
 ---
+
+## Testing
+
+Tests are organized to match the five-layer pipeline structure and cover both individual components (unit tests) and full end-to-end data flow (integration tests).
+
+### Unit Tests
+
+Each layer has a corresponding unit test module in `tests/unit/`:
+
+| Module                        | What it tests                                                                                   |
+|-------------------------------|-------------------------------------------------------------------------------------------------|
+| `input_test.py`               | Name injection, resume formatting, missing field handling, date parsing edge cases              |
+| `prompt_test.py`              | Prompt template rendering, consistency checks (same resume-job pair differs only by name)       |
+| `model_interface_test.py`     | Mock API calls for both Ollama and Gemini, JSON parsing, retry logic on failure                 |
+| `data_persistence_test.py`    | CSV write/append correctness, crash recovery, null score logging                                |
+| `bias_quantification_test.py` | Statistical test outputs (Welch's t, Cohen's d, disparity ratio), edge cases with small samples |
+| `pipeline_test.py`            | validate the full pipeline using a small synthetic fixture dataset (5 names × 1 job × 2 models = 10 prompts):                                                                                                |
+
+Run unit tests:
+```bash
+pytest tests/unit/
+```
+
+Run integration tests:
+```bash
+pytest tests/integration/
+```
+
+
+---
+
 
 # Racial Markers Dataset
 
