@@ -43,28 +43,35 @@ def build_null_baseline_prompts(input_df: pd.DataFrame, n: int = 5) -> pd.DataFr
     Take n sampled entries and strip the name from resume_text to create
     a null baseline condition. n should match the batch size used in scoring.
     """
-    baseline_df = input_df.head(n).copy()
- 
-    # Strip the name from resume_text using the existing name field
-    baseline_df['resume_text'] = baseline_df.apply(
-        lambda row: row['resume_text'].replace(row['name'], 'Applicant'), axis=1
-    )
- 
-    # Rebuild the prompt with the name-stripped resume
-    baseline_df['prompt'] = baseline_df.apply(
-        lambda row: build_prompt(row['resume_text'], row['job_title'], row['job_description']),
-        axis=1
-    )
- 
-    # Tag as null baseline
-    baseline_df['identity']     = 'Null Baseline'
-    baseline_df['name']         = 'Applicant'
-    baseline_df['first']        = 'Applicant'
-    baseline_df['last']         = ''
-    baseline_df['mean_correct'] = None  # not meaningful without a racially associated name
-    baseline_df['name_id']      = [f"null_{i}" for i in range(len(baseline_df))]
- 
-    return baseline_df
+    # Get one row per job title as template
+    templates = input_df.groupby('job_title_id').first().reset_index()
+
+    rows = []
+    for rep in range(n):
+        for _, template in templates.iterrows():
+            resume_text = template['resume_text'].replace(template['name'], 'Applicant')
+            # clean up generated email/linkedin/github
+            name_slug = template['name'].lower().replace(" ", ".")
+            name_nospace = template['name'].lower().replace(" ", "")
+            resume_text = resume_text.replace(name_slug, "applicant")
+            resume_text = resume_text.replace(name_nospace, "applicant")
+
+            prompt = build_prompt(resume_text, template['job_title'], template['job_description'])
+            unique_id = -(rep * len(templates) + int(template['job_title_id']) + 1)
+
+            rows.append({
+                'name_id': unique_id,
+                'name': 'Applicant',
+                'first': 'Applicant',
+                'last': '',
+                'identity': 'Null Baseline',
+                'mean_correct': None,
+                'job_title_id': template['job_title_id'],
+                'job_title': template['job_title'],
+                'prompt': prompt
+            })
+
+    return pd.DataFrame(rows)
 
 # Verify Prompt Consistency
 def verify_prompt(input_df):
@@ -96,7 +103,8 @@ def run_prompt_layer(n_baseline: int = 5):
     # Generate and append null baseline rows
     baseline_df = build_null_baseline_prompts(input_df, n=n_baseline)
     input_df = pd.concat([input_df, baseline_df], ignore_index=True)
-    print(f"Appended {len(baseline_df)} null baseline prompts.")
+    print(
+        f"Appended {len(baseline_df)} null baseline prompts ({n_baseline} reps × {baseline_df['job_title_id'].nunique()} jobs).")
 
     save_cols = ['name_id', 'name', 'first', 'last', 'identity',
                  'mean_correct', 'job_title_id', 'job_title', 'prompt']

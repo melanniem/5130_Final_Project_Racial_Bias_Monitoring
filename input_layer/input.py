@@ -77,7 +77,7 @@ def fix_dates(resume: dict) -> dict:
 NAMES_CSV_PATH = "data/racial_markers.csv"
 RESUMES_JSONL = "data/resume1.json"
 OUTPUT_PATH = "input_combinations.csv"
-NAMES_PER_GROUP = 57  # names per racial group (matches smallest group: Black = 57)
+NAMES_PER_GROUP = 50  # names per racial group (matches smallest group: Black = 57)
 RESUME_SAMPLE_SIZE = 50
 RANDOM_SEED = 42
 
