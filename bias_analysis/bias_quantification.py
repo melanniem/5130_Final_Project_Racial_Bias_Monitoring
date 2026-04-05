@@ -107,10 +107,42 @@ class BiasQuantification:
         ax.set_title("Score Distribution by Race Group")
         ax.legend()
         self._save_fig("score_distributions.png")
- 
-        summary.to_csv(os.path.join(self.output_dir, "descriptive_stats.csv")) # Write stats to csv
+
+        # Graph: Violin plot
+        fig, ax = plt.subplots(figsize=(10, 6))
+        sns.violinplot(data=self.df, x="race_group", y="score", hue="race_group",
+                       order=self.unique_groups, palette="Set2", inner="quartile",
+                       legend=False, ax=ax)
+        ax.axhline(y=self.threshold, color="red", linestyle="--", alpha=0.7, label=f"Threshold ({self.threshold})")
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=20, ha="right", fontsize=9)
+        ax.set_title("Score Distribution by Race Group (Violin)")
+        ax.set_xlabel("")
+        ax.set_ylabel("Score")
+        ax.legend()
+        self._save_fig("score_violin.png")
+
+        # Graph: Histogram subplots (3 + 2 layout)
+        palette_colors = sns.color_palette("Set2", len(self.unique_groups))
+        color_map = dict(zip(self.unique_groups, palette_colors))
+        fig, axes = plt.subplots(2, 3, figsize=(15, 8), sharey=True)
+        axes = axes.flatten()
+        for i, group in enumerate(self.unique_groups):
+            ax = axes[i]
+            subset = self.df[self.df["race_group"] == group]["score"]
+            ax.hist(subset, bins=20, color=color_map[group], alpha=0.85, edgecolor="white")
+            ax.axvline(x=self.threshold, color="red", linestyle="--", alpha=0.7, linewidth=1)
+            ax.set_title(group, fontsize=10)
+            ax.set_xlabel("Score", fontsize=9)
+            ax.set_ylabel("Frequency" if i % 3 == 0 else "", fontsize=9)
+            ax.tick_params(labelsize=8)
+        for j in range(len(self.unique_groups), 6):
+            axes[j].set_visible(False)
+        fig.suptitle("Score Distribution by Race Group (Histogram)", fontsize=13)
+        self._save_fig("score_histograms.png")
+
+        summary.to_csv(os.path.join(self.output_dir, "descriptive_stats.csv"))  # Write stats to csv
         return summary
-    
+
     # 2. Welch's t-test
  
     def welch_t_test(self):
