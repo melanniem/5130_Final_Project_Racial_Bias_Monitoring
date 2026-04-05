@@ -5,7 +5,7 @@ from google import genai
 from ollama import chat
 from bias_analysis import bias_quantification
 from data_persistence import data_persistence
-import main
+import ollama_main
 
 
 def test_full_pipeline_synthetic():
