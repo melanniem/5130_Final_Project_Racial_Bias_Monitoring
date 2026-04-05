@@ -69,6 +69,109 @@ Racial_Bias_Monitering/
     └── prompt_test.py
 ```
 
+---
+
+## Prerequisites
+
+Before setting up the project, install the following:
+
+**Anaconda or Miniconda** — [docs.anaconda.com/miniconda](https://docs.anaconda.com/miniconda/)
+
+**Git**
+- macOS: `xcode-select --install`
+- Windows/Linux: [git-scm.com](https://git-scm.com)
+
+**Ollama** *(local LLM pipeline only)* — [ollama.com](https://ollama.com)
+
+After installing Ollama, pull the required model:
+```
+ollama pull qwen2.5:7
+```
+
+## Installation
+**1. Clone the repository**
+```
+git clone <your-repo-url>
+cd <repo-folder>
+```
+
+**2. Create the environment**
+```
+conda env create -f environment.yml
+conda activate bias-audit
+```
+This installs Python 3.12 and all required dependencies automatically.
+
+**3. Configure your API key**
+
+```
+cp .env.example .env
+```
+
+Open `.env` and replace the placeholder:
+```
+GEMINI_API_KEY=your_actual_key_here
+```
+**Note:** Only required for ```gemini_main.py```. The Ollama pipeline does not need an API key.
+
+**4. Add data files**
+Use `data/resume1.json` or add your own resume data.
+
+**5. Verify the setup**
+Install test dependencies and run the test suite:
+```
+pip install pytest pytest-anyio
+pytest tests/ -v
+```
+All unit tests should pass. Integration tests skip automatically if data files are missing.
+
+## Running the Pipeline
+Gemini (cloud):
+```
+python gemini_main.py
+```
+Ollama (local):
+```
+python main.py
+```
+Both pipelines prompt you at startup:
+```
+Run LLM scoring? (y/n):
+```
+`y` - full pipeline: input generation → prompt building → LLM scoring → bias analysis
+
+`n` - skip to bias analysis only (requires results/llm_outputs.csv from a prior run)
+
+---
+
+## Results
+All outputs are saved to results/ after a full run:
+
+| File | Contents |
+|------|----------|
+| `llm_outputs.csv` | Raw LLM scores per resume / name / job |
+| `full_results.csv` | Combined results across all runs |
+| `descriptive_stats.csv` | Mean scores by racial group |
+| `welch_tests.csv` | Statistical significance tests |
+| `cohens_d.csv` | Effect sizes |
+| `disparity_ratios.csv` | EEOC four-fifths rule analysis |
+| `*.png` | Visualizations (boxplots, heatmaps, PCA) |
+
+Logs are written to `logs/pipeline.log`.
+
+---
+
+## Troubleshooting
+| Problem | Fix |
+|---------|-----|
+| `conda: command not found` | Restart terminal after installing Anaconda |
+| `GEMINI_API_KEY not set` | Check `.env` exists and has the correct key |
+| `ollama: connection refused` | Open the Ollama app or run `ollama serve` |
+| `data/racial_markers.csv not found` | Place data files in the `data/` folder |
+| Tests fail on import | Ensure `conda activate bias-audit` was run first |
+
+---
+
 ## Scalability Estimate
 The baseline experimental design generates:
 1 resume × 50 names × 5 groups (4 racial + 1 null baseline) × 3 jobs = 750 prompts
