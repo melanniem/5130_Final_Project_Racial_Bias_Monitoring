@@ -248,7 +248,7 @@ class BiasQuantification:
 
     # 5. PMI (Pointwise Mutual Information) Proxy Markers
 
-        # Filler words and common first names to exclude from PMI calculation
+    # Filler words and common first names to exclude from PMI calculation
     _PMI_STOPWORDS = {
         # English stopwords / filler words
         "a", "an", "the", "and", "or", "but", "if", "in", "on", "at", "to",
