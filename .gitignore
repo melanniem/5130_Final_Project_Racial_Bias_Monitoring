@@ -10,3 +10,4 @@ logs/
 results
 .idea
 .pytest_cache
+pyproject.toml
