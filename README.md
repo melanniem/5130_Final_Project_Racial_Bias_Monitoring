@@ -169,7 +169,7 @@ The baseline experimental design generates:
 |---|-------------------------------------------------------|
 | Language | Python 3.10+                                          |
 | Data manipulation | pandas                                                |
-| LLM API | Ollama (`qwen2.5:7b`) & Google Gemini ('gemini-2.5') |
+| LLM API | Ollama (`qwen2.5:7b`) & Google Gemini (`gemini-2.5`) |
 | Resume dataset | resume1.jsonl (single resume)                         |
 | Name dataset | Crabtree et al. (2023) validated racial name dataset  |
 | Statistical analysis | scipy, numpy                                          |
