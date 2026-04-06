@@ -11,7 +11,6 @@ import os
 import json
 import random
 import subprocess
-import sys
 from collections import defaultdict
 
 INPUT_PATH = "input_combinations.csv"
@@ -125,4 +124,5 @@ if __name__ == "__main__":
 
     # Launch dashboard
     logger.info("Launching dashboard...")
-    subprocess.run([sys.executable, "-m", "streamlit", "run", "dashboard.py"])
+    dashboard_path = Path(__file__).parent / "dashboard.py"
+    subprocess.run(["streamlit", "run", str(dashboard_path)], cwd=Path(__file__).parent)
